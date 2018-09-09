@@ -76,23 +76,10 @@ def SetServoPositions(POS0, POS1, POS2, POS3):
     if packetByte2 < 0:
         packetByte2 = 0
 
-    #Construct third byte in the packet----------------------------------------------------------
-
-    #Set packet byte to the given position value:
-    packetByte2 = POS2
-
-    #If packetByte exceeds 180, set it to 180.
-    if packetByte2 > 180:
-        packetByte2 = 180
-
-    #If packetByte is less than 0, set it to 0.
-    if packetByte2 < 0:
-           packetByte2 = 0
-
     #Construct fourth byte in the packet----------------------------------------------------------
 
     #Set packet byte to the given position value:
-    packetByte3 = POS3
+    packetByte3 = POS2
 
     #If packetByte exceeds 180, set it to 180.
     if packetByte3 > 180:
@@ -100,11 +87,20 @@ def SetServoPositions(POS0, POS1, POS2, POS3):
 
     #If packetByte is less than 0, set it to 0.
     if packetByte3 < 0:
-        packetByte3 = 0
+           packetByte3 = 0
 
-    #Construct fifth byte in the packet-----------------------------------------------------------
+    #Construct fifth byte in the packet----------------------------------------------------------
 
-    packetByte4 = 0
+    #Set packet byte to the given position value:
+    packetByte4 = POS3
+
+    #If packetByte exceeds 180, set it to 180.
+    if packetByte4 > 180:
+        packetByte4 = 180
+
+    #If packetByte is less than 0, set it to 0.
+    if packetByte4 < 0:
+        packetByte4 = 0
 
     #Construct sixth byte in the packet-----------------------------------------------------------
 
