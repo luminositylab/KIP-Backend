@@ -17,6 +17,7 @@ import json
 import time
 from access_control import crossdomain
 from BufferedStepperPacket import BufferedStepperPacket
+from ServoStates import ServoStates
 
 app = Flask(__name__)
 
@@ -24,15 +25,23 @@ SUCCESS = "success"
 BAD_QUERYSTRING = "bad querystring"
 # json.dumps({'message':'incorrect querystrings'}), 202, {'Content-Type': 'application/json; charset=utf-8'})
 
+servo_state = ServoStates()
 
-@app.route('/') 
+@app.route('/')
 def index():
     return SUCCESS
 
 @app.route('/set/servo/<int:servo_id>/<float:servo_position>')
 @crossdomain(origin="*")
 def set_servo_position(servo_id, servo_position):
-    # set servo to position
+    servo_state.servo_state[servo_id] = servo_position
+    servo_state.update_servos()
+    return SUCCESS
+
+@app.route('/get/debug')
+@crossdomain(origin="*")
+def debug():
+    servo_state.left_wrist_down()
     return SUCCESS
 
 @app.route('/get/sensor/<int:sensor_id>')
@@ -50,8 +59,8 @@ def set_motor_motion_profile(motor_id):
 @app.route('/set/motor/<int:motor_id>/<int:position>')
 @crossdomain(origin="*")
 def set_motor_position(motor_id, position):
-    # sets motor of specified id to specified position in steps
+
     return SUCCESS
 
-if __name__ == '__main__':     
+if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
