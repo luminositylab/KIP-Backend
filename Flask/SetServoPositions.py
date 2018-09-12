@@ -1,3 +1,7 @@
+import time
+import serial
+import RPi.GPIO as GPIO
+
 #MYRA/KIP servo position selector function
 #(C) 2018 The Luminosity Lab
 

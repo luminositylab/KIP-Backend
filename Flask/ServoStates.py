@@ -1,7 +1,6 @@
 from enum import Enum
 from SetServoPositions import SetServoPositions
-import RPi.GPIO as GPIO
-import serial
+
 
 class ServoID(Enum):
     lWrist = 0
