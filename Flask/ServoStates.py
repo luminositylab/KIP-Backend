@@ -1,6 +1,5 @@
 from enum import Enum
 from SetServoPositions import SetServoPositions
-
 class ServoID(Enum):
     lWrist = 0
     rWrist = 1

@@ -19,7 +19,7 @@ def SetServoPositions(POS0, POS1, POS2, POS3):
     resetDelay = 0.01
 
     #Construct first byte in the packet------------------------------------------------------------
-    
+
     #Set bit 0 high to specify reception by the servo/sensor controller:
     packetByte0 = 1
 
@@ -38,7 +38,7 @@ def SetServoPositions(POS0, POS1, POS2, POS3):
     #If packetByte is less than 0, set it to 0.
     if packetByte1 < 0:
          packetByte1 = 0
-    
+
     #Construct third byte in the packet----------------------------------------------------------
 
     #Set packet byte to the given position value:
@@ -89,7 +89,7 @@ def SetServoPositions(POS0, POS1, POS2, POS3):
     GPIO.setmode(GPIO.BOARD)
     GPIO.setup(packetResetPin, GPIO.OUT)
     GPIO.output(packetResetPin, GPIO.LOW)
-    
+
     #Initialize a serial object which will be used to interact with the Rx/Tx port.
     #These parameters are set to the same configuration required by the Arduino serial interface.
     serialObject = serial.Serial(
@@ -108,4 +108,3 @@ def SetServoPositions(POS0, POS1, POS2, POS3):
 
     #Transmit packet:
     serialObject.write(bytes([packetByte0, packetByte1, packetByte2, packetByte3, packetByte4, packetByte5]))
-    

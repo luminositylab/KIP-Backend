@@ -18,6 +18,8 @@ import time
 from access_control import crossdomain
 from BufferedStepperPacket import BufferedStepperPacket
 from ServoStates import ServoStates
+import RPi.GPIO as GPIO
+import serial
 
 app = Flask(__name__)
 
