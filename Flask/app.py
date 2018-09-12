@@ -11,15 +11,18 @@
 
 
 from flask import Flask
-from flask import Flask, flash, jsonify, redirect, Response, render_template, request, session, abortSet 
+from flask import Flask, flash, jsonify, redirect, Response, render_template, request, session
 import os
 import json
 import time
 from access_control import crossdomain
 from BufferedStepperPacket import BufferedStepperPacket
-from ServerResponses import SUCCESS, BAD_QUERYSTRING
+
 app = Flask(__name__)
 
+SUCCESS = "success"
+BAD_QUERYSTRING = "bad querystring"
+# json.dumps({'message':'incorrect querystrings'}), 202, {'Content-Type': 'application/json; charset=utf-8'})
 
 
 @app.route('/') 
@@ -48,7 +51,7 @@ def set_motor_motion_profile(motor_id):
 @crossdomain(origin="*")
 def set_motor_position(motor_id, position):
     # sets motor of specified id to specified position in steps
-    retun SUCCESS
+    return SUCCESS
 
 if __name__ == '__main__':     
     app.run(debug=True, host='0.0.0.0')
