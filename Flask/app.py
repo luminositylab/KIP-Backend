@@ -62,7 +62,7 @@ def set_motor_motion_profile(motor_id):
 @crossdomain(origin="*")
 def set_motor_speed(motor_id, speed):
     direction = speed > 0
-    BufferedStepperPacket(motor_id, 1, direction, 1, abs(speed), 0, 0, 0, 0)
+    BufferedStepperPacket(motor_id, 1, direction, 1, abs(speed), abs(speed), abs(speed), abs(speed), abs(speed))
     return SUCCESS
 
 @app.route('/set/motor/<int:motor_id>/<int:position>')
