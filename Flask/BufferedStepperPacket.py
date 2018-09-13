@@ -1,3 +1,7 @@
+import time
+import serial
+import RPi.GPIO as GPIO
+
 #BufferedStepperPacket() Function:
 #This function writes a packet to the serial UART pins in order to dictate the behavior of a stepper motor.
 #The function should be interpreted using Python 3.
@@ -20,26 +24,26 @@
 #Note: For extended sequences of operations, data should be sent in slight advance to reduce dead stops.
 
 def BufferedStepperPacket(MotorNum, UsePulseDrive, Direction, ForcePacket, Steps0, Steps1, Steps2, Steps3, Steps4):
-    
+
     #Sepcify constants:
     PacketResetPin = 7
     ResetDelay = 0.01
-    
+
     #Construct first byte in the packet------------------------------------------------------------
-    
+
     #Set bit 0 low to specify reception by the stepper controller:
     PacketByte0 = 0
 
     #Set bit 1 to UsePulseDrive:
     PacketByte0 = (PacketByte0 | (bool(UsePulseDrive) << 1))
-    
+
     #Set bit 2 to Direction:
     PacketByte0 = (PacketByte0 | (bool(Direction) << 2))
 
     #Set bit 3 depending on the motor number:
     if ((MotorNum == 1) or (MotorNum == 3)):
         PacketByte0 = (PacketByte0 | (1 << 3))
-    
+
     #Set bit 4 depending on the motor number:
     if ((MotorNum == 2) or (MotorNum == 3)):
         PacketByte0 = (PacketByte0 | (1 << 4))
@@ -104,7 +108,7 @@ def BufferedStepperPacket(MotorNum, UsePulseDrive, Direction, ForcePacket, Steps
     GPIO.setmode(GPIO.BOARD)
     GPIO.setup(PacketResetPin, GPIO.OUT)
     GPIO.output(PacketResetPin, GPIO.LOW)
-    
+
     #Initialize a serial object which will be used to interact with the Rx/Tx port.
     #These parameters are set to the same configuration required by the Arduino serial interface.
     serialObject = serial.Serial(
@@ -123,5 +127,3 @@ def BufferedStepperPacket(MotorNum, UsePulseDrive, Direction, ForcePacket, Steps
 
     #Transmit packet:
     serialObject.write(bytes([PacketByte0, PacketByte1, PacketByte2, PacketByte3, PacketByte4, PacketByte5]))
-    
-
