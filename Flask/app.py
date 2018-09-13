@@ -9,6 +9,7 @@
 #####################################################################
 
 
+# 50 ms rate limit (20-100ms)
 
 from flask import Flask
 from flask import Flask, flash, jsonify, redirect, Response, render_template, request, session
@@ -18,7 +19,6 @@ import time
 from access_control import crossdomain
 from BufferedStepperPacket import BufferedStepperPacket
 from ServoStates import ServoStates
-
 
 app = Flask(__name__)
 
@@ -32,7 +32,8 @@ servo_state = ServoStates()
 def index():
     return SUCCESS
 
-@app.route('/set/servo/<int:servo_id>/<float:servo_position>')
+
+@app.route('/set/servo/<int:servo_id>/<int:servo_position>')
 @crossdomain(origin="*")
 def set_servo_position(servo_id, servo_position):
     servo_state.servo_state[servo_id] = servo_position
@@ -55,6 +56,13 @@ def get_sensor_data(sensor_id):
 @crossdomain(origin="*")
 def set_motor_motion_profile(motor_id):
     # should get querystrings and send them through serial in a rate-limited way.
+    return SUCCESS
+
+@app.route('/set/motor/speed/<int:motor_id>/<int:speed>')
+@crossdomain(origin="*")
+def set_motor_speed(motor_id, speed):
+    diection = speed > 0
+    BufferedStepperPacket(motor_id, 1, direction, 1, speed, 0, 0, 0, 0)
     return SUCCESS
 
 @app.route('/set/motor/<int:motor_id>/<int:position>')
