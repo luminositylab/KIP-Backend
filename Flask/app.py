@@ -58,11 +58,10 @@ def set_motor_motion_profile(motor_id):
     # should get querystrings and send them through serial in a rate-limited way.
     return SUCCESS
 
-@app.route('/set/motor/speed/<int:motor_id>/<int:speed>')
+@app.route('/set/motor/speed/<int:motor_id>/<int:direction>/<int:speed>')
 @crossdomain(origin="*")
-def set_motor_speed(motor_id, speed):
-    direction = speed > 0
-    BufferedStepperPacket(motor_id, 1, direction, 1, abs(speed), abs(speed), abs(speed), abs(speed), abs(speed))
+def set_motor_speed(motor_id, direction, speed):
+    BufferedStepperPacket(motor_id, 1, direction, 1, abs(speed), 0, 0, 0, 0)
     return SUCCESS
 
 @app.route('/set/motor/<int:motor_id>/<int:position>')
