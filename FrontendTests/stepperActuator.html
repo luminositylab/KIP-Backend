@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Stepper Actuator</title>
+  </head>
+  <body>
+    <button type="button" name="forwardButton" id="forwardButton">Forward</button>
+    <button type="button" name="reverseButton" id="reverseButton">Reverse</button>
+
+    <script type="text/javascript">
+    var w_key = 87;
+    var s_key = 83;
+    var a_key = 65;
+    var d_key = 68;
+      document.onkeydown = function(e){
+        var charCode = (typeof e.which == "number") ? e.which : e.keyCode
+        if(charCode == w_key) {
+          xhttp.open("GET", "http://192.168.1.106:5000/set/drive/forward/20/20", true);
+          xhttp.send();
+        }
+        if(charCode == s_key) {
+          xhttp.open("GET", "http://192.168.1.106:5000/set/drive/reverse/20/20", true);
+          xhttp.send();
+        }
+        if(charCode == a_key) {
+          xhttp.open("GET", "http://192.168.1.106:5000/set/turn/0/20", true);
+          xhttp.send();
+        }
+        if(charCode == d_key) {
+          xhttp.open("GET", "http://192.168.1.106:5000/set/turn/1/20", true);
+          xhttp.send();
+        }
+      }
+
+      var xhttp = new XMLHttpRequest();
+      var forwardFlag = false;
+      var reverseFlag = false;
+      var forward = document.getElementById('forwardButton');
+      forward.onmousedown = function(){
+        forwardFlag = true;
+      };
+      forward.onmouseup = function(){
+        forwardFlag = false;
+      };
+
+      var reverse = document.getElementById('reverseButton');
+      reverse.onmousedown = function(){
+        reverseFlag = true;
+      };
+      reverse.onmouseup = function() {
+        reverseFlag = false;
+      }
+
+      setInterval(function(){
+        if(forwardFlag) {
+          xhttp.open("GET", "http://192.168.1.106:5000/set/drive/20/20", true);
+          xhttp.send();
+        }
+        if(reverseFlag) {
+          xhttp.open("GET", "http://192.168.1.106:5000/set/motor/speed/1/1/20", true);
+          xhttp.send();
+        }
+       }, 100);
+
+
+
+    </script>
+  </body>
+</html>
