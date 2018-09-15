@@ -57,12 +57,23 @@ def get_sensor_data(sensor_id):
 def set_motor_motion_profile(motor_id):
     # should get querystrings and send them through serial in a rate-limited way.
     return SUCCESS
-
-@app.route('/set/drive/<int:motor_0>/<int:motor_1>')
+@app.route('/set/turn/<int:direction>/<int:speed>')
 @crossdomain(origin="*")
-def set_motor_speed(motor_0, motor_1):
-    BufferedStepperPacket(0, 1, 0, 1, motor_0, 0, 0, 0, 0)
-    BufferedStepperPacket(1, 1, 1, 1, motor_1, 0, 0, 0, 0)
+def set_turn_speed(direction, speed):
+    BufferedStepperPacket(0, 1, direction, 1, speed, 0, 0, 0, 0)
+    BufferedStepperPacket(1, 1, direction, 1, speed, 0, 0, 0, 0)
+    return SUCCESS
+
+@app.route('/set/drive/<direction>/<int:motor_0>/<int:motor_1>')
+@crossdomain(origin="*")
+def set_drive_speed(direction, motor_0, motor_1):
+    ld = 0
+    rd = 1
+    if direction is "reverse":
+        ld = 1
+        rd = 0
+    BufferedStepperPacket(0, 1, ld, 1, motor_0, 0, 0, 0, 0)
+    BufferedStepperPacket(1, 1, rd, 1, motor_1, 0, 0, 0, 0)
     return SUCCESS
 
 @app.route('/set/motor/speed/<int:motor_id>/<int:direction>/<int:speed>')
