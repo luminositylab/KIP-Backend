@@ -10,21 +10,26 @@
 //The number of bytes expected per packet can be specified below.
 //Sensor data is monitored with a running average of depth specified below.
 //Servo positions are specified in degrees from 0 to 180.
-//4 sensors are specified and their distance averages are reported as double-floats.
+//8 digital input pullup pins are available.
 
 //Include necessary libraries:
 #include <Servo.h>
 
 //Declaration of program constants:
-const int numberOfBytes = 6;        //Number of bytes to expect per packet
-const byte usePacketBit = 0;        //Specifies which bit in Byte 0 is 'use packet'
-const byte functionBit = 1;         //Specifies which bit in Byte 0 is 'function'
-const byte servoByte0 = 1;          //Specifies byte containing angle for servo0
-const byte servoByte1 = 2;          //Specifies byte containing angle for servo1
-const byte servoByte2 = 3;          //Specifies byte containing angle for servo2
-const byte servoByte3 = 4;          //Specifies byte containing angle for servo3
-const bool activeHigh = 1;          //Set 1 to utilize packet when 'use packet' bit is 1
-const long baudRate = 250000;       //Specifies serial baud rate
+const int numberOfBytes = 6;                    //Number of bytes to expect per packet
+const byte usePacketBit = 0;                    //Specifies which bit in Byte 0 is 'use packet'
+const byte functionBit = 1;                     //Specifies which bit in Byte 0 is 'function'
+const byte servoByte0 = 1;                      //Specifies byte containing angle for servo0
+const byte servoByte1 = 2;                      //Specifies byte containing angle for servo1
+const byte servoByte2 = 3;                      //Specifies byte containing angle for servo2
+const byte servoByte3 = 4;                      //Specifies byte containing angle for servo3
+const bool activeHigh = 1;                      //Set 1 to utilize packet when 'use packet' bit is 1
+const unsigned long  serialTimeout = 100000;    //Specifies mid-packet timeout (in us) before byte counter resets to 0.
+const long baudRate = 57600;                    //Specifies serial baud rate
+
+//Declaration of timing variables:
+unsigned long timeoutElapsed = 0;               //Packet timeout elapsed time variable
+unsigned long timeoutLastMicros = 0;            //Packet timeout last microseconds value
 
 //Declaration of Servo objects:
 Servo servo0;
@@ -37,48 +42,20 @@ const byte servoPin0 = 7;
 const byte servoPin1 = 8;
 const byte servoPin2 = 9;
 const byte servoPin3 = 10;
-const byte resetPacketPin = 18;
-const byte trigPin0 = 3;
-const byte echoPin0 = 4;
-const byte trigPin1 = 5;
-const byte echoPin1 = 6;
-const byte trigPin2 = 11;
-const byte echoPin2 = 12;
-const byte trigPin3 = 13;
-const byte echoPin3 = 14;
-const byte trigPin4 = 15;
-const byte echoPin4 = 16;
-const byte trigPin5 = 17;
-const byte echoPin5 = 2;
+const byte sesnor0 = 3;
+const byte sesnor1 = 4;
+const byte sesnor2 = 5;
+const byte sesnor3 = 6;
+const byte sesnor4 = 11;
+const byte sesnor5 = 12;
+const byte sesnor6 = 13;
+const byte sesnor7 = 14;
 
 //Declaration of program control variables:
 byte receivedByte = 0;              //Number of the byte received from the packet
 byte dataContents = 0;              //Contents of the most recent serial byte
 bool usePacket = 0;                 //'Use Packet' bit
 bool function = 0;                  //Function selection choice
-
-//Declaration of sensor data acquisition constants and variables:
-const unsigned long  sensorPulseDelay = 10;   //Pulse delay for ultrasonic sensor (us)
-const unsigned long sensorTimeout = 5000;     //Sensor timeout (us)
-const int runningArraySize = 10;              //Number of most recent data samples to use in the running average
-const double soundConstant = 0.0343;          //Speed of sound constant (cm/us)
-
-double latestDistance = 0;         //Variable for latest detected distance
-
-//Running average arrays:
-double runningAverageArray0[runningArraySize] = {0};
-double runningAverageArray1[runningArraySize] = {0};
-double runningAverageArray2[runningArraySize] = {0};
-double runningAverageArray3[runningArraySize] = {0};
-double runningAverageArray4[runningArraySize] = {0};
-double runningAverageArray5[runningArraySize] = {0};
-
-int runningAverageCounter0 = 0;     //Counter for running average 0
-int runningAverageCounter1 = 0;     //Counter for running average 1
-int runningAverageCounter2 = 0;     //Counter for running average 2
-int runningAverageCounter3 = 0;     //Counter for running average 3
-int runningAverageCounter4 = 0;     //Counter for running average 4
-int runningAverageCounter5 = 0;     //Counter for running average 5
 
 void setup() {
   //Activate serial communication:
@@ -91,30 +68,30 @@ void setup() {
   servo3.attach(servoPin3);
 
   //Set pin modes for ultrasonic sensors:
-  pinMode(trigPin0, OUTPUT);
-  pinMode(echoPin0, INPUT);
-  pinMode(trigPin1, OUTPUT);
-  pinMode(echoPin1, INPUT);
-  pinMode(trigPin2, OUTPUT);
-  pinMode(echoPin2, INPUT);
-  pinMode(trigPin3, OUTPUT);
-  pinMode(echoPin3, INPUT);
-  pinMode(trigPin4, OUTPUT);
-  pinMode(echoPin4, INPUT);
-  pinMode(trigPin5, OUTPUT);
-  pinMode(echoPin5, INPUT);
-
-  //Set all ultrasonic sensor outputs:
-  digitalWrite(trigPin0, LOW);
-  digitalWrite(trigPin1, LOW);
-  digitalWrite(trigPin2, LOW);
-  digitalWrite(trigPin3, LOW);
-  digitalWrite(trigPin4, LOW);
-  digitalWrite(trigPin5, LOW);
+  pinMode(sesnor0, INPUT_PULLUP);
+  pinMode(sesnor1, INPUT_PULLUP);
+  pinMode(sesnor2, INPUT_PULLUP);
+  pinMode(sesnor3, INPUT_PULLUP);
+  pinMode(sesnor4, INPUT_PULLUP);
+  pinMode(sesnor5, INPUT_PULLUP);
+  pinMode(sesnor6, INPUT_PULLUP);
+  pinMode(sesnor7, INPUT_PULLUP);
   
 }
 
-void setServoPositions() {            //Set servo positions:
+void checkPacketTimeout() { //Determine if the mid-packet timeout has been reached:
+  //Compute elapsed time:
+  timeoutElapsed = micros() - timeoutLastMicros;
+  if(timeoutElapsed >= serialTimeout)
+  {
+    //Reset packet counter:
+    receivedByte = 0;
+    //Reset timing:
+    timeoutLastMicros = micros();
+  }
+}
+
+void setServoPositions() {  //Set servo positions:
     //Confine angle to 0-180 degrees:
     if(dataContents > 180)
     {
@@ -150,185 +127,26 @@ void setServoPositions() {            //Set servo positions:
     }
 }
 
-double computeRunningAverage(int arrayNumber) {    //Compute the running average
-  //Declare sum variable:
-  double averageSum = 0;
-
-  //Determine the sensor number to use for the calculation:
-  if(arrayNumber == 0)
-  {
-    //Iterate over all elements in the array:
-    for(int index = 0; index < runningArraySize; index++)
-    {
-      //Add array content to sum:
-      averageSum += runningAverageArray0[index];
-    }
-  }
-  if(arrayNumber == 1)
-  {
-    //Iterate over all elements in the array:
-    for(int index = 0; index < runningArraySize; index++)
-    {
-      //Add array content to sum:
-      averageSum += runningAverageArray1[index];
-    }
-  }
-  if(arrayNumber == 2)
-  {
-    //Iterate over all elements in the array:
-    for(int index = 0; index < runningArraySize; index++)
-    {
-      //Add array content to sum:
-      averageSum += runningAverageArray2[index];
-    }
-  }
-  if(arrayNumber == 3)
-  {
-    //Iterate over all elements in the array:
-    for(int index = 0; index < runningArraySize; index++)
-    {
-      //Add array content to sum:
-      averageSum += runningAverageArray3[index];
-    }
-  }
-  if(arrayNumber == 4)
-  {
-    //Iterate over all elements in the array:
-    for(int index = 0; index < runningArraySize; index++)
-    {
-      //Add array content to sum:
-      averageSum += runningAverageArray4[index];
-    }
-  }
-  if(arrayNumber == 5)
-  {
-    //Iterate over all elements in the array:
-    for(int index = 0; index < runningArraySize; index++)
-    {
-      //Add array content to sum:
-      averageSum += runningAverageArray5[index];
-    }
-  }
-
-  //Return the average:
-  return averageSum/runningArraySize;
-}
-
-void readSensors() {          //Perform sensor data acquisition:
-  //Read input from sensor 0:
-  digitalWrite(trigPin0, HIGH);
-  delayMicroseconds(sensorPulseDelay);
-  digitalWrite(trigPin0, LOW);
-  //Wait for latest distance:
-  latestDistance = pulseIn(echoPin0, HIGH, sensorTimeout)*soundConstant/2;
-  //Report distance into running average:
-  runningAverageArray0[runningAverageCounter0] = latestDistance;
-  //Increment array counter and determine if it should be reset.
-  runningAverageCounter0++;
-  if(runningAverageCounter0 > runningArraySize)
-  {
-    runningAverageCounter0 = 0;
-  }
-
-  //Read input from sensor 1:
-  digitalWrite(trigPin1, HIGH);
-  delayMicroseconds(sensorPulseDelay);
-  digitalWrite(trigPin1, LOW);
-  //Wait for latest distance:
-  latestDistance = pulseIn(echoPin1, HIGH, sensorTimeout)*soundConstant/2;
-  //Report distance into running average:
-  runningAverageArray1[runningAverageCounter1] = latestDistance;
-  //Increment array counter and determine if it should be reset.
-  runningAverageCounter1++;
-  if(runningAverageCounter1 > runningArraySize)
-  {
-    runningAverageCounter1 = 0;
-  }
-
-  //Read input from sensor 2:
-  digitalWrite(trigPin2, HIGH);
-  delayMicroseconds(sensorPulseDelay);
-  digitalWrite(trigPin2, LOW);
-  //Wait for latest distance:
-  latestDistance = pulseIn(echoPin2, HIGH, sensorTimeout)*soundConstant/2;
-  //Report distance into running average:
-  runningAverageArray2[runningAverageCounter2] = latestDistance;
-  //Increment array counter and determine if it should be reset.
-  runningAverageCounter2++;
-  if(runningAverageCounter2 > runningArraySize)
-  {
-    runningAverageCounter2 = 0;
-  }
-
-  //Read input from sensor 3:
-  digitalWrite(trigPin3, HIGH);
-  delayMicroseconds(sensorPulseDelay);
-  digitalWrite(trigPin3, LOW);
-  //Wait for latest distance:
-  latestDistance = pulseIn(echoPin3, HIGH, sensorTimeout)*soundConstant/2;
-  //Report distance into running average:
-  runningAverageArray3[runningAverageCounter3] = latestDistance;
-  //Increment array counter and determine if it should be reset.
-  runningAverageCounter3++;
-  if(runningAverageCounter3 > runningArraySize)
-  {
-    runningAverageCounter3 = 0;
-  }
-
-  //Read input from sensor 4:
-  digitalWrite(trigPin4, HIGH);
-  delayMicroseconds(sensorPulseDelay);
-  digitalWrite(trigPin4, LOW);
-  //Wait for latest distance:
-  latestDistance = pulseIn(echoPin4, HIGH, sensorTimeout)*soundConstant/2;
-  //Report distance into running average:
-  runningAverageArray4[runningAverageCounter4] = latestDistance;
-  //Increment array counter and determine if it should be reset.
-  runningAverageCounter4++;
-  if(runningAverageCounter4 > runningArraySize)
-  {
-    runningAverageCounter4 = 0;
-  }
-
-  //Read input from sensor 5:
-  digitalWrite(trigPin5, HIGH);
-  delayMicroseconds(sensorPulseDelay);
-  digitalWrite(trigPin5, LOW);
-  //Wait for latest distance:
-  latestDistance = pulseIn(echoPin5, HIGH, sensorTimeout)*soundConstant/2;
-  //Report distance into running average:
-  runningAverageArray5[runningAverageCounter5] = latestDistance;
-  //Increment array counter and determine if it should be reset.
-  runningAverageCounter5++;
-  if(runningAverageCounter5 > runningArraySize)
-  {
-    runningAverageCounter5 = 0;
-  }
-
-}
-
 void reportSensorData() {     //Report sensor data to serial port (if applicable):
-  
-  //Write sensor data to serial:
-  Serial.println(String(computeRunningAverage(0),8));
-  Serial.println(String(computeRunningAverage(1),8));
-  Serial.println(String(computeRunningAverage(2),8));
-  Serial.println(String(computeRunningAverage(3),8));
-  Serial.println(String(computeRunningAverage(4),8));
-  Serial.println(String(computeRunningAverage(5),8));
-}
-
-void checkPacketReset() {           //Reset packet counter if resetPacketPin has been pulled high
-  if(digitalRead(resetPacketPin))
-  {
-    receivedByte = 0;
-  }
+  //Write digital inputs from sensor pins to serial:
+  Serial.write(digitalRead(sesnor0));
+  Serial.write(digitalRead(sesnor1));
+  Serial.write(digitalRead(sesnor2));
+  Serial.write(digitalRead(sesnor3));
+  Serial.write(digitalRead(sesnor4));
+  Serial.write(digitalRead(sesnor5));
+  Serial.write(digitalRead(sesnor6));
+  Serial.write(digitalRead(sesnor7));
 }
 
 void checkSerial() {                //Determine if data is in the serial buffer and utilize it:
-  if(Serial.available() > 0)
+  while(Serial.available() > 0)
   {
-    dataContents = Serial.read();   //Load most recent byte into dataContents
+    //Reset mid-packet timeout timer:
+    timeoutLastMicros = micros();
+
+    //Load most recent byte into dataContents:
+    dataContents = Serial.read();
     
     //Determine if the latest byte is the first byte in the packet:
     if(receivedByte == 0)
@@ -365,12 +183,9 @@ void checkSerial() {                //Determine if data is in the serial buffer 
 }
 
 void loop() {
-  //Reset packet counter if resetPacketPin has been pulled high:
-  checkPacketReset();
+  //Reset packet counter if mid-packet timeout is reached
+  checkPacketTimeout();
   
   //Determine if data is in the serial buffer and utilize it:
   checkSerial();
-  
-  //Perform sensor data acquisition:
-  readSensors();
 }

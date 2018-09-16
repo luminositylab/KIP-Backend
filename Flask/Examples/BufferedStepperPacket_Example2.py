@@ -1,3 +1,11 @@
+#Please include the following to allow the function to operate properly:
+
+import time
+import serial
+import RPi.GPIO as GPIO
+
+#--------------------------------------------------------------------------------------------------
+
 #BufferedStepperPacket() Function:
 #This function writes a packet to the serial UART pins in order to dictate the behavior of a stepper motor.
 #The function should be interpreted using Python 3.
@@ -109,3 +117,23 @@ def BufferedStepperPacket(MotorNum, UsePulseDrive, Direction, ForcePacket, Steps
     #Transmit packet:
     serialObject.write(bytes([PacketByte0, PacketByte1, PacketByte2, PacketByte3, PacketByte4, PacketByte5]))
     
+#--------------------------------------------------------------------------------------------------
+
+#Example code for testing the function:
+index = 0
+
+#Loop to allow repeated entry of data:
+while True:
+    
+    inputData = input("Give Space-Separated Values: Motor#, Pulse-Option, Direction, Force-Option, S0, S1, S2, S3, S4:")
+    
+    repeatTimes = int(input("Give Number of Repetitions:"))
+    
+    #Run function:
+    while index < repeatTimes:
+        BufferedStepperPacket(int(inputData.split()[0]), int(inputData.split()[1]), int(inputData.split()[2]), int(inputData.split()[3]), int(inputData.split()[4]), int(inputData.split()[5]), int(inputData.split()[6]), int(inputData.split()[7]), int(inputData.split()[8]))
+        index = index + 1
+        
+    index = 0
+        
+

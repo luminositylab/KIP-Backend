@@ -29,10 +29,6 @@ import RPi.GPIO as GPIO
 
 def BufferedStepperPacket(MotorNum, UsePulseDrive, Direction, ForcePacket, Steps0, Steps1, Steps2, Steps3, Steps4):
     
-    #Sepcify constants:
-    PacketResetPin = 7
-    ResetDelay = 0.01
-    
     #Construct first byte in the packet------------------------------------------------------------
     
     #Set bit 0 low to specify reception by the stepper controller:
@@ -106,28 +102,17 @@ def BufferedStepperPacket(MotorNum, UsePulseDrive, Direction, ForcePacket, Steps
         PacketByte5 = 0
 
     #Configure output and transmit packet to serial port------------------------------------------
-
-    #Set up GPIO for packet reset pin:
-    GPIO.setwarnings(False)
-    GPIO.setmode(GPIO.BOARD)
-    GPIO.setup(PacketResetPin, GPIO.OUT)
-    GPIO.output(PacketResetPin, GPIO.LOW)
     
     #Initialize a serial object which will be used to interact with the Rx/Tx port.
     #These parameters are set to the same configuration required by the Arduino serial interface.
     serialObject = serial.Serial(
         port = '/dev/ttyS0',
-        baudrate = 250000,
+        baudrate = 57600,
         parity = serial.PARITY_NONE,
         stopbits = serial.STOPBITS_ONE,
         bytesize = serial.EIGHTBITS,
         timeout = 1
     )
-
-    #Reset microcontroller packet receiver using packet reset pin:
-    GPIO.output(PacketResetPin, GPIO.HIGH)
-    time.sleep(ResetDelay)
-    GPIO.output(PacketResetPin, GPIO.LOW)
 
     #Transmit packet:
     serialObject.write(bytes([PacketByte0, PacketByte1, PacketByte2, PacketByte3, PacketByte4, PacketByte5]))
@@ -135,19 +120,73 @@ def BufferedStepperPacket(MotorNum, UsePulseDrive, Direction, ForcePacket, Steps
 #--------------------------------------------------------------------------------------------------
 
 #Example code for testing the function:
-index = 0
 
-#Loop to allow repeated entry of data:
+packetSendDelay = 0.05
+
 while True:
+    dummyVar = input("Press enter to run motor test...")
+
+    #Crank motors for 5 seconds.
+    #Allow pulse-stepping
+    #Run forwards
+    #Run at 20 steps per 100ms
+    for x in range(0, 10):
+        BufferedStepperPacket(0, 1, 0, 0, 20, 20, 20, 20, 20)
+        time.sleep(packetSendDelay)
+        BufferedStepperPacket(1, 1, 0, 0, 20, 20, 20, 20, 20)
+        time.sleep(packetSendDelay)
+        BufferedStepperPacket(2, 1, 0, 0, 20, 20, 20, 20, 20)
+        time.sleep(packetSendDelay)
+        BufferedStepperPacket(3, 1, 0, 0, 20, 20, 20, 20, 20)
+        time.sleep(packetSendDelay)
+
+    #Wait for motors to finish their tasks
+    time.sleep(3)
+
+    #Crank motors for 5 seconds.
+    #Allow pulse-stepping
+    #Run backwards
+    #Run at 20 steps per 100ms
+    for x in range(0, 10):
+        BufferedStepperPacket(0, 1, 1, 0, 20, 20, 20, 20, 20)
+        time.sleep(packetSendDelay)
+        BufferedStepperPacket(1, 1, 1, 0, 20, 20, 20, 20, 20)
+        time.sleep(packetSendDelay)
+        BufferedStepperPacket(2, 1, 1, 0, 20, 20, 20, 20, 20)
+        time.sleep(packetSendDelay)
+        BufferedStepperPacket(3, 1, 1, 0, 20, 20, 20, 20, 20)
+        time.sleep(packetSendDelay)
+
+    #Wait for motors to finish their tasks
+    time.sleep(3)
     
-    inputData = input("Give Space-Separated Values: Motor#, Pulse-Option, Direction, Force-Option, S0, S1, S2, S3, S4:")
-    
-    repeatTimes = int(input("Give Number of Repetitions:"))
-    
-    #Run function:
-    while index < repeatTimes:
-        BufferedStepperPacket(int(inputData.split()[0]), int(inputData.split()[1]), int(inputData.split()[2]), int(inputData.split()[3]), int(inputData.split()[4]), int(inputData.split()[5]), int(inputData.split()[6]), int(inputData.split()[7]), int(inputData.split()[8]))
-        index = index + 1
-        
-    index = 0
-        
+    #Crank motors for 5 seconds.
+    #Allow pulse-stepping
+    #Run forwards
+    #Run at 2 steps per 100ms
+    for x in range(0, 10):
+        BufferedStepperPacket(0, 1, 0, 0, 2, 2, 2, 2, 2)
+        time.sleep(packetSendDelay)
+        BufferedStepperPacket(1, 1, 0, 0, 2, 2, 2, 2, 2)
+        time.sleep(packetSendDelay)
+        BufferedStepperPacket(2, 1, 0, 0, 2, 2, 2, 2, 2)
+        time.sleep(packetSendDelay)
+        BufferedStepperPacket(3, 1, 0, 0, 2, 2, 2, 2, 2)
+        time.sleep(packetSendDelay)
+
+    #Wait for motors to finish their tasks
+    time.sleep(3)
+
+    #Crank motors for 5 seconds.
+    #Prohibit pulse-stepping
+    #Run forwards
+    #Run at 2 steps per 100ms
+    for x in range(0, 10):
+        BufferedStepperPacket(0, 0, 0, 0, 2, 2, 2, 2, 2)
+        time.sleep(packetSendDelay)
+        BufferedStepperPacket(1, 0, 0, 0, 2, 2, 2, 2, 2)
+        time.sleep(packetSendDelay)
+        BufferedStepperPacket(2, 0, 0, 0, 2, 2, 2, 2, 2)
+        time.sleep(packetSendDelay)
+        BufferedStepperPacket(3, 0, 0, 0, 2, 2, 2, 2, 2)
+        time.sleep(packetSendDelay)
