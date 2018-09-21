@@ -29,8 +29,7 @@ app = Flask(__name__)
 
 SUCCESS = "success"
 BAD_QUERYSTRING = "bad querystring"
-left = 0
-right = 0
+
 # json.dumps({'message':'incorrect querystrings'}), 202, {'Content-Type': 'application/json; charset=utf-8'})
 
 servo_state = ServoStates()
@@ -61,8 +60,8 @@ def set_drive(left, right):
     try:
         l = float(left)
         r = float(right)
-        right = r
-        left = l
+        robo_state.left = l
+        robo_state.right = r
 
     except Exception as inst:
         return str(inst)
@@ -87,8 +86,12 @@ def set_motor_speed(motor_id, direction, speed):
 
 def kip_main():
   threading.Timer((1.0/20.0), kip_main).start()
+  left = robo_state.left
+  right = robo_state.right
   d_left = int(left > 0)
   d_right = int(right > 0)
+  if left is 0 or right is 0:
+      print("left: " + left + "| right: " + right)
   BufferedStepperPacket(0, 1, d_left, 1, abs(left), abs(left), abs(left), abs(left), abs(left))
   BufferedStepperPacket(1, 1, d_right, 1, abs(right), abs(right), abs(right), abs(right), abs(right))
   #tank_drive(robo_state.left, robo_state.right)
