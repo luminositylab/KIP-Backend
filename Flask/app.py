@@ -20,6 +20,7 @@ from access_control import crossdomain
 from BufferedStepperPacket import BufferedStepperPacket
 from ServoStates import ServoStates
 from time import sleep
+import threading
 
 from Controls import tank_drive
 
@@ -69,10 +70,10 @@ def set_motor_speed(motor_id, direction, speed):
     BufferedStepperPacket(motor_id, 1, direction, 1, abs(speed), 0, 0, 0, 0)
     return SUCCESS
 
-
+def kip_main():
+  threading.Timer(5.0, kip_main).start()
+  print "Hello, World!"
 
 if __name__ == '__main__':
+    kip_main()
     app.run(debug=True, host='0.0.0.0')
-    while(True):
-        print("testing")
-        sleep(1)
