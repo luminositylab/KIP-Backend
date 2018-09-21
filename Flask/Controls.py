@@ -10,8 +10,8 @@ def turn(speed):
 def tank_drive(left, right):
     d_left = int(left > 0)
     d_right = int(right > 0)
-    BufferedStepperPacket(0, 1, d_left, 1, abs(speed), 0, 0, 0, 0)
-    BufferedStepperPacket(1, 1, d_right, 1, abs(speed), 0, 0, 0, 0)
+    BufferedStepperPacket(0, 1, d_left, 1, abs(left), 0, 0, 0, 0)
+    BufferedStepperPacket(1, 1, d_right, 1, abs(right), 0, 0, 0, 0)
 
 class KIP_State:
     def __init__(self):
