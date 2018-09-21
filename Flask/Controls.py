@@ -21,3 +21,5 @@ class KIP_State:
     def set_drive(self, left, right):
         self.left = left
         self.right = right
+    def get_drive(self):
+        return self.left, self.right

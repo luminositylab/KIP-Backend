@@ -86,8 +86,7 @@ def set_motor_speed(motor_id, direction, speed):
 
 def kip_main():
   threading.Timer((1.0/20.0), kip_main).start()
-  left = robo_state.left
-  right = robo_state.right
+  left, right = robo_state.get_drive()
   d_left = int(left > 0)
   d_right = int(right > 0)
   if left is 0 or right is 0:
