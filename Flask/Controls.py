@@ -17,6 +17,7 @@ class KIP_State:
     def __init__(self):
         self.left = 0
         self.right = 0
+        print("Init state")
     def set_drive(self, left, right):
         self.left = left
         self.right = right
