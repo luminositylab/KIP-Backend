@@ -84,6 +84,7 @@ def set_motor_speed(motor_id, direction, speed):
 
 def kip_main():
   threading.Timer((1.0/20.0), kip_main).start()
+  print("l ", left, " r ", right)
   tank_drive(robo_state.left, robo_state.right)
 
 if __name__ == '__main__':
