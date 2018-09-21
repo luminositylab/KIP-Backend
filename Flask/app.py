@@ -66,6 +66,15 @@ def set_drive(left, right):
     return SUCCESS
 
 
+# @app.route('/arm/<side>/<speed>')
+# @crossdomain(origin="*")
+# def set_arm_speed(side, speed):
+#     direction = int(speed) > 0
+#     if(side == "left"):
+#         motor_id = 2
+#     else:
+#         motor_id = 3
+#     BufferedStepperPacket(motor_id, 1, direction, 1, abs(speed), 0, 0, 0, 0)
 
 @app.route('/set/motor/speed/<int:motor_id>/<int:direction>/<int:speed>')
 @crossdomain(origin="*")
@@ -74,7 +83,7 @@ def set_motor_speed(motor_id, direction, speed):
     return SUCCESS
 
 def kip_main():
-  threading.Timer((1.0/100.0), kip_main).start()
+  threading.Timer((1.0/20.0), kip_main).start()
   tank_drive(robo_state.left, robo_state.right)
 
 if __name__ == '__main__':

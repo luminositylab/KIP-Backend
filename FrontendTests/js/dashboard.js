@@ -11,8 +11,8 @@ function send_servo(id, degree) {
   send_route("/set/servo/" + id + "/" + degree);
 }
 function send_drive(left, right) {
-  console.log("left " + left + " right " + right);
-  //send_route("/drive/" + left + "/" + right);
+  //console.log("left " + left + " right " + right);
+  send_route("/drive/" + left + "/" + right);
 }
 
 var wristServoLeft = document.getElementById('wrist-servo-left');
@@ -54,18 +54,22 @@ function update_drive(keys){
   send_drive(left, right);
 }
 
-
+var down_run_flag = true;
 var down_keys = [];
-document.addEventListener("keydown", function(event){
+document.addEventListener("keypress", function(event){
   if(!down_keys.includes(event.key)) {
     down_keys.push(event.key);
   }
-  update_drive(down_keys);
+  if(down_run_flag) {
+    update_drive(down_keys);
+    down_run_flag = false;
+  }
 }, false);
 document.addEventListener("keyup", function(event){
   if(down_keys.includes(event.key)) {
     down_keys.splice( down_keys.indexOf(event.key), 1 );
   }
+  down_run_flag = true;
   update_drive(down_keys);
 }, false);
 
