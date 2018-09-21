@@ -19,6 +19,9 @@ import time
 from access_control import crossdomain
 from BufferedStepperPacket import BufferedStepperPacket
 from ServoStates import ServoStates
+from time import sleep
+
+from Controls import tank_drive
 
 app = Flask(__name__)
 
@@ -40,41 +43,25 @@ def set_servo_position(servo_id, servo_position):
     servo_state.update_servos()
     return SUCCESS
 
-@app.route('/get/debug')
-@crossdomain(origin="*")
-def debug():
-    servo_state.left_wrist_down()
-    return SUCCESS
-
 @app.route('/get/sensor/<int:sensor_id>')
 @crossdomain(origin="*")
 def get_sensor_data(sensor_id):
     # get and send sensor data
     return SUCCESS
 
-@app.route('/set/motor/motionprofile/<int:motor_id>')
+
+@app.route('/drive/<left>/<right>')
 @crossdomain(origin="*")
-def set_motor_motion_profile(motor_id):
-    # should get querystrings and send them through serial in a rate-limited way.
-    return SUCCESS
-@app.route('/set/turn/<int:direction>/<int:speed>')
-@crossdomain(origin="*")
-def set_turn_speed(direction, speed):
-    BufferedStepperPacket(0, 1, direction, 1, speed, 0, 0, 0, 0)
-    BufferedStepperPacket(1, 1, direction, 1, speed, 0, 0, 0, 0)
+def set_drive(left, right):
+    try:
+        l = float(left)
+        r = float(right)
+        tank_drive(l, r)
+    except Exception as inst:
+        return str(inst)
     return SUCCESS
 
-@app.route('/set/drive/<direction>/<int:motor_0>/<int:motor_1>')
-@crossdomain(origin="*")
-def set_drive_speed(direction, motor_0, motor_1):
-    ld = 0
-    rd = 1
-    if direction is "reverse":
-        ld = 1
-        rd = 0
-    BufferedStepperPacket(0, 1, ld, 1, motor_0, 0, 0, 0, 0)
-    BufferedStepperPacket(1, 1, rd, 1, motor_1, 0, 0, 0, 0)
-    return SUCCESS
+
 
 @app.route('/set/motor/speed/<int:motor_id>/<int:direction>/<int:speed>')
 @crossdomain(origin="*")
@@ -82,11 +69,10 @@ def set_motor_speed(motor_id, direction, speed):
     BufferedStepperPacket(motor_id, 1, direction, 1, abs(speed), 0, 0, 0, 0)
     return SUCCESS
 
-@app.route('/set/motor/<int:motor_id>/<int:position>')
-@crossdomain(origin="*")
-def set_motor_position(motor_id, position):
 
-    return SUCCESS
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
+    while(True):
+        print("testing")
+        sleep(1)
