@@ -1,6 +1,9 @@
 from BufferedStepperPacket import BufferedStepperPacket
 from ServoStates import ServoStates
-
+import threading
+import time
+from time import sleep
+from Queue import Queue
 
 def turn(speed):
     direction = int(speed > 0)
@@ -23,3 +26,21 @@ class KIP_State:
         self.right = right
     def get_drive(self):
         return self.left, self.right
+
+class StateManager(threading.Thread):
+    def __init__(self, queue, kwargs=None):
+        threading.Thread.__init__(self, args=(), kwargs=None)
+        self.queue = queue
+        self.daemon = True
+
+    def run(self):
+        while(True):
+            (left, right) = self.queue.get()
+            self.drive(left, right)
+            sleep(1/20.0)
+
+    def drive(self, left, right):
+        d_left = int(left > 0)
+        d_right = int(right > 0)
+        BufferedStepperPacket(0, 1, d_left, 1, abs(left), abs(left), abs(left), abs(left), abs(left))
+        BufferedStepperPacket(1, 1, d_right, 1, abs(right), abs(right), abs(right), abs(right), abs(right))

@@ -21,8 +21,8 @@ from BufferedStepperPacket import BufferedStepperPacket
 from ServoStates import ServoStates
 from time import sleep
 import threading
-
-from Controls import tank_drive, KIP_State
+from Queue import Queue
+from Controls import tank_drive, KIP_State, StateManager
 
 
 app = Flask(__name__)
@@ -33,7 +33,8 @@ BAD_QUERYSTRING = "bad querystring"
 # json.dumps({'message':'incorrect querystrings'}), 202, {'Content-Type': 'application/json; charset=utf-8'})
 
 servo_state = ServoStates()
-robo_state = KIP_State()
+q = Queue()
+manager = StateManager(q)
 
 @app.route('/')
 def index():
@@ -60,8 +61,7 @@ def set_drive(left, right):
     try:
         l = float(left)
         r = float(right)
-        robo_state.left = l
-        robo_state.right = r
+        manager.queue.put((l,r))
 
     except Exception as inst:
         return str(inst)
@@ -84,17 +84,17 @@ def set_motor_speed(motor_id, direction, speed):
     BufferedStepperPacket(motor_id, 1, direction, 1, abs(speed), 0, 0, 0, 0)
     return SUCCESS
 
-def kip_main():
-  threading.Timer((1.0/20.0), kip_main).start()
-  left, right = robo_state.get_drive()
-  d_left = int(left > 0)
-  d_right = int(right > 0)
-  if left is 0 or right is 0:
-      print("left: " + left + "| right: " + right)
-  BufferedStepperPacket(0, 1, d_left, 1, abs(left), abs(left), abs(left), abs(left), abs(left))
-  BufferedStepperPacket(1, 1, d_right, 1, abs(right), abs(right), abs(right), abs(right), abs(right))
+# def kip_main():
+#   threading.Timer((1.0/20.0), kip_main).start()
+#   left, right = robo_state.get_drive()
+#   d_left = int(left > 0)
+#   d_right = int(right > 0)
+#   if left is 0 or right is 0:
+#       print("left: ", left, "| right: ", right)
+#   BufferedStepperPacket(0, 1, d_left, 1, abs(left), abs(left), abs(left), abs(left), abs(left))
+#   BufferedStepperPacket(1, 1, d_right, 1, abs(right), abs(right), abs(right), abs(right), abs(right))
   #tank_drive(robo_state.left, robo_state.right)
 
 if __name__ == '__main__':
-    kip_main()
+    manager.start()
     app.run(debug=True, host='0.0.0.0')
