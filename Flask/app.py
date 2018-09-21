@@ -22,7 +22,8 @@ from ServoStates import ServoStates
 from time import sleep
 import threading
 
-from Controls import tank_drive
+from Controls import tank_drive, KIP_State
+
 
 app = Flask(__name__)
 
@@ -31,6 +32,7 @@ BAD_QUERYSTRING = "bad querystring"
 # json.dumps({'message':'incorrect querystrings'}), 202, {'Content-Type': 'application/json; charset=utf-8'})
 
 servo_state = ServoStates()
+robo_state = KIP_State()
 
 @app.route('/')
 def index():
@@ -57,7 +59,8 @@ def set_drive(left, right):
     try:
         l = float(left)
         r = float(right)
-        tank_drive(l, r)
+        robo_state.set_drive(l, r)
+
     except Exception as inst:
         return str(inst)
     return SUCCESS
@@ -71,8 +74,8 @@ def set_motor_speed(motor_id, direction, speed):
     return SUCCESS
 
 def kip_main():
-  threading.Timer(5.0, kip_main).start()
-  print "Hello, World!"
+  threading.Timer((1.0/100.0), kip_main).start()
+  tank_drive(robo_state.left, robo_state.right)
 
 if __name__ == '__main__':
     kip_main()
