@@ -21,7 +21,7 @@ from BufferedStepperPacket import BufferedStepperPacket
 from ServoStates import ServoStates
 from time import sleep
 import threading
-from Queue import Queue
+from queue import Queue
 from Controls import tank_drive, KIP_State, StateManager
 
 

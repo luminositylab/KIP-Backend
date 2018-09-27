@@ -3,7 +3,7 @@ from ServoStates import ServoStates
 import threading
 import time
 from time import sleep
-from Queue import Queue
+from queue import Queue
 
 def turn(speed):
     direction = int(speed > 0)
@@ -36,6 +36,8 @@ class StateManager(threading.Thread):
     def run(self):
         while(True):
             (left, right) = self.queue.get()
+            if left is None or right is None:
+                return
             self.drive(left, right)
             sleep(1/20.0)
 
