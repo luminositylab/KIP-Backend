@@ -45,10 +45,10 @@ class StateManager(threading.Thread):
             left_drive_motor.set(user_inputs['left_drive'])
             right_drive_motor.set(user_inputs['right_drive'])
 
-            left_shoulder_motor.set(user_inputs['left_arm'])
-            right_shoulder_motor.set(user_inputs['right_arm'])
+            # left_shoulder_motor.set(user_inputs['left_arm'])
+            # right_shoulder_motor.set(user_inputs['right_arm'])
 
-            
+
 
             # end use defined code
         
