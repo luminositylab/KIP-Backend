@@ -15,8 +15,11 @@ function send_drive(left, right) {
   console.log("left " + left + " right " + right);
   send_route("/drive/" + left + "/" + right);
 }
-function send_arm(motor, direction, speed) {
-  send_route("/set/motor/speed/" + motor + "/" + direction + "/" + speed);
+function send_left_arm(speed) {
+  send_route("/arm/left/" + speed);
+}
+function send_right_arm(speed) {
+  send_route("/arm/right/" + speed);
 }
 
 
@@ -40,28 +43,47 @@ wristServoLeft.addEventListener("keyup", function(event) {
 });
 
 function update_drive(keys){
+  var left_arm = 0;
+  var right_arm = 0;
   var left = 0;
   var right = 0;
-  if(keys.includes('w')) {
-    left += 1;
-    right += 1;
+
+  if(keys.includes('z')) {
+    left_arm += 0.5;
   }
-  if(keys.includes('s')) {
-    left -= 1;
-    right -= 1;
+  if(keys.includes('x')) {
+    left_arm -= 0.5;
+  }
+  if(keys.includes('c')) {
+    right_arm += 0.5;
+  }
+  if(keys.includes('v')) {
+    right_arm -= 0.5;
   }
   if(keys.includes('a')) {
-    left -= 0.5;
+    left += 0.5;
     right += 0.5;
   }
   if(keys.includes('d')) {
+    left -= 0.5;
+    right -= 0.5;
+  }
+  if(keys.includes('w')) {
+    left -= 0.5;
+    right += 0.5;
+  }
+  if(keys.includes('s')) {
     left += 0.5;
     right -= 0.5;
   }
 
   left *= 50;
   right *= 50;
+  left_arm *= 50;
+  right_arm *= 50;
   send_drive(left, right);
+  send_left_arm(left_arm);
+  send_right_arm(right_arm);
 }
 
 var down_run_flag = true;

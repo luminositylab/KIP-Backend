@@ -82,6 +82,27 @@ def set_drive(left, right):
         return str(inst)
     return SUCCESS
 
+@app.route('/arm/left/<value>')
+@crossdomain(origin="*")
+def set_left_arm(value):
+    try:
+        global user_inputs
+        user_inputs['left_arm'] = float(value)
+        update_manager()
+    except Exception as inst:
+        return str(inst)
+    return SUCCESS
+
+@app.route('/arm/right/<value>')
+@crossdomain(origin="*")
+def set_right_arm(value):
+    try:
+        global user_inputs
+        user_inputs['right_arm'] = float(value)
+        update_manager()
+    except Exception as inst:
+        return str(inst)
+    return SUCCESS
 
 if __name__ == '__main__':
     manager.start()
