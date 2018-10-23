@@ -22,9 +22,9 @@ function send_arm(motor, direction, speed) {
 
 var left_shoulder_down = document.getElementById('left-shoulder-down');
 var left_shoulder_up = document.getElementById('right-shoulder-up');
-a
+
 left_shoulder_down.onmousedown = function() {
-  
+
 };
 left_shoulder_down.onmouseup = function() {
 

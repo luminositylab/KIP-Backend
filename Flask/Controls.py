@@ -1,3 +1,13 @@
+#####################################################################
+#                                                                   #
+#   `Controls.py` defines all of the state control in second thread #
+#   This software is for educational purposes.                      #
+#                                                                   #
+#   License: Luminosity Lab (c) 2018                                #
+#   Written by GowanR <g@gmichaelrowland.com>                       #
+#                                                                   #
+#####################################################################
+
 from BufferedStepperPacket import BufferedStepperPacket
 from ServoStates import ServoStates
 import threading
@@ -10,22 +20,6 @@ def turn(speed):
     BufferedStepperPacket(0, 1, direction, 1, abs(speed), 0, 0, 0, 0)
     BufferedStepperPacket(1, 1, direction, 1, abs(speed), 0, 0, 0, 0)
 
-def tank_drive(left, right):
-    d_left = int(left > 0)
-    d_right = int(right > 0)
-    BufferedStepperPacket(0, 1, d_left, 1, abs(left), abs(left), abs(left), abs(left), abs(left))
-    BufferedStepperPacket(1, 1, d_right, 1, abs(right), abs(right), abs(right), abs(right), abs(right))
-
-class KIP_State:
-    def __init__(self):
-        self.left = 0
-        self.right = 0
-        print("Init state")
-    def set_drive(self, left, right):
-        self.left = left
-        self.right = right
-    def get_drive(self):
-        return self.left, self.right
 
 class StateManager(threading.Thread):
     def __init__(self, queue, kwargs=None):
@@ -35,10 +29,10 @@ class StateManager(threading.Thread):
 
     def run(self):
         while(True):
-            (left, right) = self.queue.get()
-            if left is None or right is None:
+            user_inputs = self.queue.get()
+            if user_inputs['left_drive'] is None or user_inputs['right_drive'] is None:
                 return
-            self.drive(left, right)
+            self.drive(user_inputs['left_drive'], user_inputs['right_drive'])
             sleep(1/20.0)
 
     def drive(self, left, right):
@@ -46,3 +40,11 @@ class StateManager(threading.Thread):
         d_right = int(right > 0)
         BufferedStepperPacket(0, 1, d_left, 1, abs(left), abs(left), abs(left), abs(left), abs(left))
         BufferedStepperPacket(1, 1, d_right, 1, abs(right), abs(right), abs(right), abs(right), abs(right))
+
+class Motor:
+    def __init__(self, motor_id):
+        self.id = motor_id
+
+    def set(self, speed):
+        d_speed = int(speed > 0)
+        BufferedStepperPacket(self.id, 1, d_speed, 1, abs(speed), abs(speed), abs(speed), abs(speed), abs(speed))
