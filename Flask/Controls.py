@@ -28,11 +28,25 @@ class StateManager(threading.Thread):
         self.daemon = True
 
     def run(self):
+        # begin user set up code
+        left_drive_motor = Motor(0)
+        right_drive_motor = Motor(1)
+
+        left_shoulder_motor = Motor(3)
+        right_shoulder_motor = Motor(4)
+        # end user set up code
+
         while(True):
             user_inputs = self.queue.get()
-            if user_inputs['left_drive'] is None or user_inputs['right_drive'] is None:
+            if user_inputs is None:
                 return
-            self.drive(user_inputs['left_drive'], user_inputs['right_drive'])
+            
+            # begin user defined code
+            left_drive_motor.set(user_inputs['left_drive'])
+            right_drive_motor.set(user_inputs['right_drive'])
+
+            # end use defined code
+        
             sleep(1/20.0)
 
     def drive(self, left, right):

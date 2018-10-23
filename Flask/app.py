@@ -36,7 +36,16 @@ servo_state = ServoStates()
 q = Queue()
 manager = StateManager(q)
 
-user_inputs = {}
+user_inputs = {
+    'left_drive':0.0,
+    'right_drive':0.0,
+    'left_arm':0.0,
+    'right_arm':0.0,
+    'left_wrist':0.0,
+    'right_wrist':0.0,
+    'left_claw':0.0,
+    'right_claw':0.0
+}
 def update_manager():
     manager.queue.put(user_inputs)
 
@@ -73,12 +82,8 @@ def set_drive(left, right):
         return str(inst)
     return SUCCESS
 
+@app.route('/set/')
 
-@app.route('/set/motor/speed/<int:motor_id>/<int:direction>/<int:speed>')
-@crossdomain(origin="*")
-def set_motor_speed(motor_id, direction, speed):
-    BufferedStepperPacket(motor_id, 1, direction, 1, abs(speed), 0, 0, 0, 0)
-    return SUCCESS
 
 
 if __name__ == '__main__':
