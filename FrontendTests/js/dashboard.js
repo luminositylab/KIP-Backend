@@ -82,8 +82,8 @@ function update_drive(keys){
   left_arm *= 50;
   right_arm *= 50;
   send_drive(left, right);
-  send_left_arm(left_arm);
-  send_right_arm(right_arm);
+  //send_left_arm(left_arm);
+  //send_right_arm(right_arm);
 }
 
 var down_run_flag = true;
