@@ -82,9 +82,6 @@ def set_drive(left, right):
         return str(inst)
     return SUCCESS
 
-@app.route('/set/')
-
-
 
 if __name__ == '__main__':
     manager.start()
