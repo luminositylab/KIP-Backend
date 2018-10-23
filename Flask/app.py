@@ -22,7 +22,7 @@ from ServoStates import ServoStates
 from time import sleep
 import threading
 from queue import Queue
-from Controls import tank_drive, StateManager
+from Controls import StateManager
 
 
 app = Flask(__name__)
