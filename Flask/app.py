@@ -3,7 +3,7 @@
 #   `app.py` is the main server for controlling KIP using REST API  #
 #   This software is for educational purposes.                      #
 #                                                                   #
-#   License: https://www.mozilla.org/en-US/MPL/                     #
+#   License: Luminosity Lab (c) 2018                                #
 #   Written by GowanR <g@gmichaelrowland.com>                       #
 #                                                                   #
 #####################################################################
@@ -17,16 +17,37 @@ import os
 import json
 import time
 from access_control import crossdomain
-from BufferedStepperPacket import BufferedStepperPacket
 from ServoStates import ServoStates
+from time import sleep
+import threading
+from queue import Queue
+from Controls import StateManager
+
 
 app = Flask(__name__)
 
 SUCCESS = "success"
 BAD_QUERYSTRING = "bad querystring"
+
 # json.dumps({'message':'incorrect querystrings'}), 202, {'Content-Type': 'application/json; charset=utf-8'})
 
 servo_state = ServoStates()
+q = Queue()
+manager = StateManager(q)
+
+user_inputs = {
+    'left_drive':0.0,
+    'right_drive':0.0,
+    'left_arm':0.0,
+    'right_arm':0.0,
+    'left_wrist':0.0,
+    'right_wrist':0.0,
+    'left_claw':0.0,
+    'right_claw':0.0
+}
+def update_manager():
+    #print('global sent user inputs ', user_inputs['left_drive'],' ', user_inputs['right_drive'])
+    manager.queue.put(user_inputs)
 
 @app.route('/')
 def index():
@@ -40,53 +61,52 @@ def set_servo_position(servo_id, servo_position):
     servo_state.update_servos()
     return SUCCESS
 
-@app.route('/get/debug')
-@crossdomain(origin="*")
-def debug():
-    servo_state.left_wrist_down()
-    return SUCCESS
-
 @app.route('/get/sensor/<int:sensor_id>')
 @crossdomain(origin="*")
 def get_sensor_data(sensor_id):
     # get and send sensor data
     return SUCCESS
 
-@app.route('/set/motor/motionprofile/<int:motor_id>')
+
+@app.route('/drive/<left>/<right>')
 @crossdomain(origin="*")
-def set_motor_motion_profile(motor_id):
-    # should get querystrings and send them through serial in a rate-limited way.
-    return SUCCESS
-@app.route('/set/turn/<int:direction>/<int:speed>')
-@crossdomain(origin="*")
-def set_turn_speed(direction, speed):
-    BufferedStepperPacket(0, 1, direction, 1, speed, 0, 0, 0, 0)
-    BufferedStepperPacket(1, 1, direction, 1, speed, 0, 0, 0, 0)
+def set_drive(left, right):
+    try:
+        global user_inputs
+        user_inputs['left_drive'] = float(left)
+        user_inputs['right_drive'] = float(right)
+        #print('local drive settings ', float(left), ' ', float(right))
+        #update_manager()
+        manager.queue.put({"left_drive":float(left),"right_drive":float(right)})
+        
+
+    except Exception as inst:
+        print(inst)
+        return str(inst)
     return SUCCESS
 
-@app.route('/set/drive/<direction>/<int:motor_0>/<int:motor_1>')
-@crossdomain(origin="*")
-def set_drive_speed(direction, motor_0, motor_1):
-    ld = 0
-    rd = 1
-    if direction is "reverse":
-        ld = 1
-        rd = 0
-    BufferedStepperPacket(0, 1, ld, 1, motor_0, 0, 0, 0, 0)
-    BufferedStepperPacket(1, 1, rd, 1, motor_1, 0, 0, 0, 0)
-    return SUCCESS
+# @app.route('/arm/left/<value>')
+# @crossdomain(origin="*")
+# def set_left_arm(value):
+#     try:
+#         global user_inputs
+#         user_inputs['left_arm'] = float(value)
+#         update_manager()
+#     except Exception as inst:
+#         return str(inst)
+#     return SUCCESS
 
-@app.route('/set/motor/speed/<int:motor_id>/<int:direction>/<int:speed>')
-@crossdomain(origin="*")
-def set_motor_speed(motor_id, direction, speed):
-    BufferedStepperPacket(motor_id, 1, direction, 1, abs(speed), 0, 0, 0, 0)
-    return SUCCESS
-
-@app.route('/set/motor/<int:motor_id>/<int:position>')
-@crossdomain(origin="*")
-def set_motor_position(motor_id, position):
-
-    return SUCCESS
+# @app.route('/arm/right/<value>')
+# @crossdomain(origin="*")
+# def set_right_arm(value):
+#     try:
+#         global user_inputs
+#         user_inputs['right_arm'] = float(value)
+#         update_manager()
+#     except Exception as inst:
+#         return str(inst)
+#     return SUCCESS
 
 if __name__ == '__main__':
+    manager.start()
     app.run(debug=True, host='0.0.0.0')
