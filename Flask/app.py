@@ -17,7 +17,6 @@ import os
 import json
 import time
 from access_control import crossdomain
-from BufferedStepperPacket import BufferedStepperPacket
 from ServoStates import ServoStates
 from time import sleep
 import threading
@@ -47,6 +46,7 @@ user_inputs = {
     'right_claw':0.0
 }
 def update_manager():
+    #print('global sent user inputs ', user_inputs['left_drive'],' ', user_inputs['right_drive'])
     manager.queue.put(user_inputs)
 
 @app.route('/')
@@ -75,10 +75,13 @@ def set_drive(left, right):
         global user_inputs
         user_inputs['left_drive'] = float(left)
         user_inputs['right_drive'] = float(right)
-        update_manager()
+        #print('local drive settings ', float(left), ' ', float(right))
+        #update_manager()
+        manager.queue.put({"left_drive":float(left),"right_drive":float(right)})
         
 
     except Exception as inst:
+        print(inst)
         return str(inst)
     return SUCCESS
 
