@@ -9,7 +9,10 @@ function send_route(extention){
   xhttp.send();
 }
 function send_servo(id, degree) {
-  send_route("/set/servo/" + id + "/" + degree);
+}
+function send_right_wrist(position) {
+  send_route("/wrist/left/" + position);
+  
 }
 function send_drive(left, right) {
   // console.log("left " + left + " right " + right);
@@ -24,17 +27,73 @@ function send_right_arm(speed) {
 
 
 var left_shoulder_down = document.getElementById('left-shoulder-down');
-var left_shoulder_up = document.getElementById('right-shoulder-up');
+var left_shoulder_up = document.getElementById('left-shoulder-up');
 
+var right_shoulder_down = document.getElementById('right-shoulder-down');
+var right_shoulder_up = document.getElementById('right-shoulder-up');
+
+var right_shoulder_down_flag = false;
+right_shoulder_down.onmousedown = function() {
+  right_shoulder_down_flag = true;
+}
+right_shoulder_down.onmouseup = function() {
+  right_shoulder_down_flag = false;
+  send_right_arm(0);
+}
+
+var right_shoulder_up_flag = false;
+right_shoulder_up.onmousedown = function () {
+  right_shoulder_up_flag = true;
+}
+right_shoulder_up.onmouseup = function() {
+  right_shoulder_up_flag = false;
+  send_right_arm(0);
+
+}
+
+var left_shoulder_down_flag = false;
 left_shoulder_down.onmousedown = function() {
-
+  left_shoulder_down_flag = true;
+  
 };
 left_shoulder_down.onmouseup = function() {
-
+  left_shoulder_down_flag = false;  
+  send_left_arm(0)
 };
+
+var left_shoulder_up_flag = false;
+left_shoulder_up.onmousedown = function() {
+  left_shoulder_up_flag = true;
+  
+};
+left_shoulder_up.onmouseup = function() {
+  left_shoulder_up_flag = false;
+  send_left_arm(0)
+};
+
+setInterval(function(){
+  if(left_shoulder_down_flag){
+    send_left_arm(-50);
+  } else if(left_shoulder_up_flag) {
+    send_left_arm(50)
+  }
+  if (right_shoulder_down_flag) {
+    send_right_arm(-50);
+  } else if (right_shoulder_up_flag) {
+    send_right_arm(50);
+  }
+
+}, 100);
+
 
 
 var wristServoLeft = document.getElementById('wrist-servo-left');
+wristServoLeft.onkeypress = function(key) {
+  if (key.key == 'Enter') {
+    send_right_wrist(wristServoLeft.value);
+  }
+}
+
 
 wristServoLeft.addEventListener("keyup", function(event) {
     if (event.key === "Enter") {
@@ -56,23 +115,11 @@ var updateRate = 10; // htz
 var acc = 0;
 function update_drive(keys, useRateLimit){
   dt = (new Date()).getTime() - start;
-  var left_arm = 0;
-  var right_arm = 0;
+  
   var left = 0;
   var right = 0;
 
-  if(keys.includes('z')) {
-    left_arm += 0.5;
-  }
-  if(keys.includes('x')) {
-    left_arm -= 0.5;
-  }
-  if(keys.includes('c')) {
-    right_arm += 0.5;
-  }
-  if(keys.includes('v')) {
-    right_arm -= 0.5;
-  }
+  
   if(keys.includes('w')) {
     left += 0.5;
     right += 0.5;
@@ -94,21 +141,22 @@ function update_drive(keys, useRateLimit){
   right = clamp(right, 0.5);
   left *= 50;
   right *= 50;
-  left_arm *= 50;
-  right_arm *= 50;
+  
   acc += dt;
   if(useRateLimit) {
     if (acc >= (1/updateRate) * 1000){
       send_drive(left, right);
+      
       acc = 0;
     }
+
+
   } else {
     send_drive(left, right);
   }
   
   start = (new Date().getTime());
-  //send_left_arm(left_arm);
-  //send_right_arm(right_arm);
+  
 }
 
 var down_run_flag = true;
@@ -131,7 +179,3 @@ document.addEventListener("keyup", function(event){
   update_drive(down_keys, false);
 }, false);
 
-setInterval(function(){
-  // http request runner
-  //console.log(down_keys);
- }, 100);
