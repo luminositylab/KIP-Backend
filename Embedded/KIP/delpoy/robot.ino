@@ -3,11 +3,11 @@
 #include "BusManager.h"
 #include <Arduino.h>
 #include <Wire.h>
+#include <Servo.h>
 
 unsigned long lastTime;
 unsigned long dt;
 BusManager _busManager = BusManager();
-
 void setup() {
     Wire.begin(0x8);
     Wire.onReceive(receiveEvent);
@@ -19,6 +19,7 @@ void loop() {
   _busManager.update(dt);
   dt = micros() - lastTime;
 }
+
 
 void receiveEvent(int howMany) {
   while (Wire.available()) { // loop through all but the last

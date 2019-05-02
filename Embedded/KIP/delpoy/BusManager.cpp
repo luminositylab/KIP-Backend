@@ -22,7 +22,7 @@ BusManager::BusManager() {
 
 
     // Servo definitions
-    _dev.servo0.write(90);
+    // _dev.servo0.write(90);
 }
 
 
