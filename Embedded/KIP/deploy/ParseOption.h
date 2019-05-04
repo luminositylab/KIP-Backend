@@ -26,6 +26,7 @@
 */
 #include <Arduino.h>
 #include "KeyValue.h"
+#include <ArduinoSTL.h>
 #ifndef __PARSEOPTION_H_
 #define __PARSEOPTION_H_
 
@@ -38,7 +39,7 @@ class ParseOption {
       bool addCharToPool(char c); // adds a char to the pool of chars that gets parsed for database commands.
 
     private:
-      LinkedList<KeyValue> _storage;
+      std::vector<KeyValue> _storage;
       void parsePool(); // parses the pool of characters for database commands.
 
 };
