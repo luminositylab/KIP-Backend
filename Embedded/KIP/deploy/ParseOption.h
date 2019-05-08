@@ -44,8 +44,9 @@ class ParseOption {
       std::string _charPool; // this is the pool of characters that gets parsed for commands.
       std::vector<KeyValue> _storage; // this acts as the persistent memory of the robot.
       void parsePool(); // parses the pool of characters for database commands.
-      std::vector<std::string> split(const std::string &s, char delim); // returns vector of strings split by deliminator
+      std::vector<std::string> split(std::string& s, std::string delim); // returns vector of strings split by deliminator
       // ---- subparse operations ---
+      std::vector<std::string> getArgs(std::string keyword, unsigned short expectedArgumentSize); // returns arguments given for specific keywords command
       bool parseGet(); // parses pool for get command, returns true if the command finds a get command
       bool parseSet(); // parses pool for set command, returns true if the command finds a set command
       

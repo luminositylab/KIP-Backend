@@ -14,6 +14,7 @@ unsigned long dt;
 ParseOption _parser = ParseOption();
 void setup() {
   Serial.begin(9600);
+  std::cout << "Feed me an integers." << std::endl;
     // Wire.begin(0x8);
     // Wire.onReceive(receiveEvent);
     // lastTime = micros();
