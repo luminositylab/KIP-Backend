@@ -15,6 +15,7 @@ ParseOption _parser = ParseOption();
 void setup() {
   Serial.begin(9600);
   std::cout << "Feed me an integers." << std::endl;
+  _parser.runUnitTests();
     // Wire.begin(0x8);
     // Wire.onReceive(receiveEvent);
     // lastTime = micros();
@@ -24,7 +25,7 @@ void loop() {
   lastTime = micros();
   // _busManager.update(dt);
   // Serial.println("hello");
-  _parser.testUpdate();
+  
   dt = micros() - lastTime;
   delay(200);
 }

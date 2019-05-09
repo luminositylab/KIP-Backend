@@ -35,7 +35,7 @@
 class ParseOption {
     public:
       ParseOption();
-      void testUpdate(); // calls some private methods for testing purposes
+      void runUnitTests(); // calls some private methods for testing purposes
       bool keyExists(std::string key); // checks if the KeyValue exists based on key token
       std::string get(std::string key); // returns the value of a specific key. if the key doesn't exist, returns an unstable KeyValue
       void set(std::string key, std::string value); // creates a new key value chunk if one doesn't already exist. returns true if memory allocated.
