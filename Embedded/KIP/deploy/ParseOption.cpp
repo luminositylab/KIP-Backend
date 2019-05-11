@@ -45,7 +45,8 @@ void ParseOption::set(std::string key, std::string value) {
  * 
 */
 void ParseOption::addCharToPool(char c) {
-    _charPool.append(c); // _charPool is a std::string, not a std::vector
+    _charPool += c; // _charPool is a std::string, not a std::vector
+    std::cout << _charPool << std::endl;
     parsePool();
 }
 
@@ -92,10 +93,18 @@ bool ParseOption::parseSet() {
 */
 void ParseOption::parsePool() {
     if (parseGet()) {
+        std::cout << "[!] Parsed GET" << std::endl;
         return;
     }
     if (parseSet()) {
+        std::cout << "[!] Parsed SET" << std::endl;
         return;
+    }
+    if (!_storage.empty()) {
+        std::cout << "DATA:" << std::endl;
+        for (KeyValue &kv : _storage) {
+            std::cout << kv.getKey() << ": " << kv.getValue() << std::endl;
+        }
     }
 }
 
@@ -185,4 +194,5 @@ void ParseOption::runUnitTests() {
     } else {
         std::cout << "[FAILED]" << std::endl;
     }
+    _charPool = std::string();
 }

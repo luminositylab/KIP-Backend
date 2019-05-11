@@ -1,7 +1,7 @@
 #include "BusManager.h"
 
 BusManager::BusManager() {
-    
+    _busParser = ParseOption();
     // Motor definitions
 
     // Left drive motor
@@ -80,23 +80,7 @@ void BusManager::teleopHandler(char c) {
 }
 
 void BusManager::feedData(char c) {
-    if (c == 'A') {
-        _opState = AUTO;
-        return;
-    } else if (c == 'T') {
-        _opState = TELEOP;
-        return;
-    }
-
-    if (_opState == TELEOP) {
-        teleopHandler(c);
-        return;
-    } else if (_opState == AUTO) {
-        return;
-    } else {
-        // this is theoretically unreachable
-        return;
-    }
+    _busParser.addCharToPool(c);
 }
 
 void BusManager::update(unsigned long dt) {

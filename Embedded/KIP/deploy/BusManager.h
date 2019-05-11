@@ -30,7 +30,7 @@ class BusManager {
       void update(unsigned long dt);  // Updates the physical hardware state based bus state
       void feedData(char c);          // Pass chars from bus line -- this function passes to the state machine
       DevBoardLayout _dev = DevBoardLayout();
-      ParseOption _parseOptions[10];
+      ParseOption _busParser;
     private:
       void teleopHandler(char c);
 
