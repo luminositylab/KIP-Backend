@@ -14,9 +14,9 @@ BusManager _busManager = BusManager();
 ParseOption _parser = ParseOption();
 void setup() {
   Serial.begin(9600);
-  Wire.setClock(400);
-  std::cout << "Feed me an integers." << std::endl;
-  _parser.runUnitTests();
+  Wire.setClock(400000);
+  std::cout << "[BOOTED]" << std::endl;
+  // _parser.runUnitTests();
     Wire.begin(0x8);
     Wire.onReceive(receiveEvent);
     lastTime = micros();
@@ -25,11 +25,10 @@ void setup() {
 
 void loop() {
   lastTime = micros();
-  // _busManager.update(dt);
+  _busManager.update(dt);
   // Serial.println("hello");
   
   dt = micros() - lastTime;
-  delay(200);
 }
 
 

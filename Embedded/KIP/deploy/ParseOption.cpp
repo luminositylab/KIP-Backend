@@ -46,7 +46,7 @@ void ParseOption::set(std::string key, std::string value) {
 */
 void ParseOption::addCharToPool(char c) {
     _charPool += c; // _charPool is a std::string, not a std::vector
-    std::cout << _charPool << std::endl;
+    // std::cout << _charPool << std::endl;
     parsePool();
 }
 
@@ -92,22 +92,8 @@ bool ParseOption::parseSet() {
  * 
 */
 void ParseOption::parsePool() {
-    if (parseGet()) {
-        std::cout << "[!] Parsed GET" << std::endl;
-        return;
-    }
-    if (parseSet()) {
-        std::cout << "[!] Parsed SET" << std::endl;
-        return;
-    }
-    if (!_storage.empty()) {
-        std::cout << "DATA:" << std::endl;
-        for (KeyValue &kv : _storage) {
-            std::cout << kv.getKey() << ": " << kv.getValue() << std::endl;
-        }
-    }
+    
 }
-
 
 
 /**
@@ -157,42 +143,42 @@ std::vector<std::string> ParseOption::split (std::string &s, std::string delimit
  * This method is used to test the functionality of the ParseOption class.
  * 
 */
-void ParseOption::runUnitTests() {
-    std::cout << "[SET TEST]:";
-    _charPool = "SET foo bar ";
-    if (parseGet()) {
-        std::cout << "[FAILED]" << std::endl;
-    } else if (parseSet()) {
-        std::cout << "[PASSED]" << std::endl;
-    } else {
-        std::cout << "[FAILED]" << std::endl;
-    }
+// void ParseOption::runUnitTests() {
+//     std::cout << "[SET TEST]:";
+//     _charPool = "SET foo bar ";
+//     if (parseGet()) {
+//         std::cout << "[FAILED]" << std::endl;
+//     } else if (parseSet()) {
+//         std::cout << "[PASSED]" << std::endl;
+//     } else {
+//         std::cout << "[FAILED]" << std::endl;
+//     }
 
-    std::cout << "[POOL EMPTY TEST]:";
-    if (_charPool.empty()) {
-        std::cout << "[PASSED]" << std::endl;
-    } else {
-        std::cout << "[FAILED]" << std::endl;
-    }
+//     std::cout << "[POOL EMPTY TEST]:";
+//     if (_charPool.empty()) {
+//         std::cout << "[PASSED]" << std::endl;
+//     } else {
+//         std::cout << "[FAILED]" << std::endl;
+//     }
 
-    _charPool = std::string();
-    std::cout << "[EMPTY PARSE TEST]:";
-    if (parseGet()) {
-        std::cout << "[FAILED]" << std::endl;
-    } else if (parseSet()) {
-        std::cout << "[FAILED]" << std::endl;
-    } else {
-        std::cout << "[PASSED]" << std::endl;
-    }
+//     _charPool = std::string();
+//     std::cout << "[EMPTY PARSE TEST]:";
+//     if (parseGet()) {
+//         std::cout << "[FAILED]" << std::endl;
+//     } else if (parseSet()) {
+//         std::cout << "[FAILED]" << std::endl;
+//     } else {
+//         std::cout << "[PASSED]" << std::endl;
+//     }
 
-    _charPool = "GET foo ";
-    std::cout << "[GET TEST]:";
-    if(parseSet()) {
-        std::cout << "[FAILED]" << std::endl;
-    } else if (parseGet()) {
-        std::cout << "[PASSED]" << std::endl;
-    } else {
-        std::cout << "[FAILED]" << std::endl;
-    }
-    _charPool = std::string();
-}
+//     _charPool = "GET foo ";
+//     std::cout << "[GET TEST]:";
+//     if(parseSet()) {
+//         std::cout << "[FAILED]" << std::endl;
+//     } else if (parseGet()) {
+//         std::cout << "[PASSED]" << std::endl;
+//     } else {
+//         std::cout << "[FAILED]" << std::endl;
+//     }
+//     _charPool = std::string();
+// }
