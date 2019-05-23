@@ -26,7 +26,7 @@ def handle_message(message):
     print('received message: ' + str(message) )
 
 @socketio.on('connect', namespace='/kip')
-def connect(sid, envicd ron):
+def connect(sid):
     print("Connect, sid ")
 
 @socketio.on('update', namespace='/kip')
@@ -40,4 +40,4 @@ def disconnect(sid):
 
 if __name__ == '__main__':
     print("Running Socket Server")
-    socketio.run(app)
+    socketio.run(app, host='0.0.0.0')

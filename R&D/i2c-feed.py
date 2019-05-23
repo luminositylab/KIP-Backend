@@ -1,5 +1,5 @@
 from smbus import SMBus
-
+import time
 global addr
 addr = 0x8 # bus address
 global bus
@@ -27,7 +27,9 @@ def send_over_bus_persist(c):
 
 while True:
     word = str(input("Input commmand instructions:"))
+    send_over_bus_persist(chr(255))
     for c in word:
+        #time.sleep(0.05)
         send_over_bus_persist(c)
 
     #print("Send Failure: " + str(failed_sends/total_sends) + "%")
