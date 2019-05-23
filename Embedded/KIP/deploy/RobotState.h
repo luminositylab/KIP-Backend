@@ -4,6 +4,8 @@
 class RobotState {
     public:
         RobotState();
+        float getPreciseArmPosition();
+        void setPreciseArmPosition(float position);
         void setLeftDriveSpeed(char speed);
         void setRightDriveSpeed(char speed);
         char getLeftDriveSpeed(); // returns speed in RPM
@@ -15,6 +17,7 @@ class RobotState {
         char _leftSpeed; // in RPM
         char _rightSpeed; // in RPM
         char _armPosition; // in rotations
+        float _preciseArmPosition; 
 
 };
 
