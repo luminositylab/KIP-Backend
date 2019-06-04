@@ -4,13 +4,13 @@
 
 
 #include <StepperController.h>
+#include <DevBoardLayout.h>
 #include <Arduino.h>
-
 unsigned long lastTime;
 unsigned long dt;
-
+DevBoardLayout _dev;
 void setup() {
-
+	_dev = 
 
 }
 

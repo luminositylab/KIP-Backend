@@ -21,14 +21,18 @@ def FAILURE(message=""):
 def index():
     return jsonify(SUCCESS())
 
+@socketio.on('message')
+def handle_message(message):
+    print('received message: ' + str(message) )
+
 @socketio.on('connect', namespace='/kip')
-def connect(sid, environ):
+def connect(sid):
     print("Connect, sid ")
 
 @socketio.on('update', namespace='/kip')
 def update(sid, data):
     print("message ", data)
-    sio.emit('reply', room=sid)
+    # sio.emit('reply', room=sid)
 
 @socketio.on('disconnect', namespace='/kip')
 def disconnect(sid):
@@ -36,4 +40,4 @@ def disconnect(sid):
 
 if __name__ == '__main__':
     print("Running Socket Server")
-    socketio.run(app)
+    socketio.run(app, host='0.0.0.0')

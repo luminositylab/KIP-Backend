@@ -3,14 +3,24 @@
 #include "BusManager.h"
 #include <Arduino.h>
 #include <Wire.h>
+#include <Servo.h>
+
+#include <ArduinoSTL.h>
+#include <ArduinoUnit.h>
+#include "KeyValue.h"
 
 unsigned long lastTime;
 unsigned long dt;
-BusManager _busManager = BusManager();
+test(ok) 
+{
+  int x=3;
+  int y=3;
+  assertEqual(x,y);
+}
 
+BusManager _busManager = BusManager();
 void setup() {
-    Wire.begin(0x8);
-    Wire.onReceive(receiveEvent);
+    Serial.begin(9600); // <---- DO NOT RUN SERIAL 
     lastTime = micros();
 }
 
@@ -18,11 +28,4 @@ void loop() {
   lastTime = micros();
   _busManager.update(dt);
   dt = micros() - lastTime;
-}
-
-void receiveEvent(int howMany) {
-  while (Wire.available()) { // loop through all but the last
-    char c = Wire.read(); // receive byte as a character
-    _busManager.feedData(c);
-  }
 }

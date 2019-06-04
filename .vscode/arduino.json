@@ -1,6 +1,0 @@
-{
-    "board": "arduino:avr:mega",
-    "configuration": "cpu=atmega2560",
-    "sketch": "Embedded\\KIP\\delpoy\\robot.ino",
-    "port": "COM10"
-}
