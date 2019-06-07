@@ -13,14 +13,13 @@ unsigned long dt;
 BusManager _busManager = BusManager();
 ParseOption _parser = ParseOption();
 void setup() {
-  Serial.begin(9600);
-  Wire.setClock(400000);
-  std::cout << "[BOOTED]" << std::endl;
+  // Serial.begin(9600);
+  Wire.setClock(9e9);
+  // std::cout << "[BOOTED]" << std::endl;
   // _parser.runUnitTests();
     Wire.begin(0x8);
     Wire.onReceive(receiveEvent);
     lastTime = micros();
-
 }
 
 void loop() {
@@ -39,5 +38,6 @@ void receiveEvent(int howMany) {
     char c = Wire.read(); // receive byte as a character
     // std::cout << c << " " << i++ << std::endl;
     _busManager.feedData(c);
+
   }
 }

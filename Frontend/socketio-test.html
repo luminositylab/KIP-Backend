@@ -3,9 +3,13 @@
 
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
     <script type="text/javascript" charset="utf-8">
-        var socket = io.connect('http://127.0.0.1:5000/');
+        var socket = io.connect('http://192.168.1.123:5000/');
         socket.on('connect', function() {
-            socket.emit('message', {data: 'I\'m connected!'});
+            // socket.emit('message', {data: 'I\'m connected!'});
         });
+
+        window.setInterval(function() {
+            socket.emit('message', {data: 'test'})
+        }, 1000);
     </script>
 </html>

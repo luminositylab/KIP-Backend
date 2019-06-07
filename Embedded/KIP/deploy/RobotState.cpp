@@ -25,7 +25,12 @@ char RobotState::getRightDriveSpeed() {
 void RobotState::setArmPosition(char position) {
     _armPosition = position;
 }
-
+void RobotState::setPreciseArmPosition(float position) {
+    _preciseArmPosition = position;
+}
 char RobotState::getArmPosition() {
     return _armPosition;
+}
+float RobotState::getPreciseArmPosition() {
+    return _preciseArmPosition;
 }
