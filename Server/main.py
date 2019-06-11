@@ -62,18 +62,18 @@ def appdrive(x, y):
 def handle_message(message):
     print('received message: ' + str(message) )
 
-@socketio.on('connect', namespace='/kip')
+@socketio.on('connect')
 def connect(sid):
-    print("Connect, sid ")
+    print("Connect, sid ", sid)
 
-@socketio.on('update', namespace='/kip')
-def update(sid, data):
-    print("message ", data)
+@socketio.on('subscribeToTimer')
+def update(sid):
+    print("message ")
     # sio.emit('reply', room=sid)
 
-@socketio.on('disconnect', namespace='/kip')
+@socketio.on('disconnect')
 def disconnect(sid):
-    print('disconnect ', sid)
+    print('disconnect ')
 
 if __name__ == '__main__':
     print("Running Socket Server")
