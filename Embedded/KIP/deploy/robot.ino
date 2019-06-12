@@ -13,7 +13,7 @@ unsigned long dt;
 BusManager _busManager = BusManager();
 ParseOption _parser = ParseOption();
 void setup() {
-  // Serial.begin(9600);
+  // Serial.begin(250000);
   Wire.setClock(9e9);
   // std::cout << "[BOOTED]" << std::endl;
   // _parser.runUnitTests();

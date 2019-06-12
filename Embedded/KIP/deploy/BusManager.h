@@ -21,8 +21,11 @@ enum TeleopParseState {
 };
 
 enum BusState {
+  NEXT_DIR_0,
   NEXT_MOTOR_0,
+  NEXT_DIR_1,
   NEXT_MOTOR_1,
+  NEXT_DIR_2,
   NEXT_MOTOR_2,
   IDLE
 };

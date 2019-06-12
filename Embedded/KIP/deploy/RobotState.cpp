@@ -4,33 +4,50 @@ RobotState::RobotState() {
     _leftSpeed = 0;
     _rightSpeed = 0;
     _armPosition = 0;
+    _rightPositive = true;
+    _leftPositive = true;
 }
 
-void RobotState::setLeftDriveSpeed(char speed) {
+void RobotState::setLeftDriveSpeed(int speed) {
     _leftSpeed = speed;
 }
 
-void RobotState::setRightDriveSpeed(char speed) {
+void RobotState::setRightDriveSpeed(int speed) {
     _rightSpeed = speed;
 }
 
-char RobotState::getLeftDriveSpeed() {
-    return _leftSpeed;
+int RobotState::getLeftDriveSpeed() {
+    if (_leftPositive) {
+        return _leftSpeed;
+    } else {
+        return -1 * _leftSpeed;
+    }
 }
 
-char RobotState::getRightDriveSpeed() {
-    return _rightSpeed;
+int RobotState::getRightDriveSpeed() {
+    if (_rightPositive) {
+        return _rightSpeed;
+    } else {
+        return -1 * _rightSpeed;
+    }
 }
 
-void RobotState::setArmPosition(char position) {
+void RobotState::setArmPosition(int position) {
     _armPosition = position;
 }
 void RobotState::setPreciseArmPosition(float position) {
     _preciseArmPosition = position;
 }
-char RobotState::getArmPosition() {
+int RobotState::getArmPosition() {
     return _armPosition;
 }
 float RobotState::getPreciseArmPosition() {
     return _preciseArmPosition;
+}
+
+void RobotState::setLeftDriveDirection(int dir) {
+    _leftPositive = dir > 0;
+}
+void RobotState::setRightDriveDirection(int dir){
+    _rightPositive = dir > 0;
 }

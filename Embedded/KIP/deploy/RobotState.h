@@ -6,17 +6,23 @@ class RobotState {
         RobotState();
         float getPreciseArmPosition();
         void setPreciseArmPosition(float position);
-        void setLeftDriveSpeed(char speed);
-        void setRightDriveSpeed(char speed);
-        char getLeftDriveSpeed(); // returns speed in RPM
-        char getRightDriveSpeed(); // returns speed in RPM
+        void setLeftDriveSpeed(int speed);
+        void setRightDriveSpeed(int speed);
+        int getLeftDriveSpeed(); // returns speed in RPM
+        int getRightDriveSpeed(); // returns speed in RPM
 
-        void setArmPosition(char position); // sets the arm position in rotations
-        char getArmPosition(); // returns the position of the arm in roations
+        void setLeftDriveDirection(int dir);
+        void setRightDriveDirection(int dir);
+
+
+        void setArmPosition(int position); // sets the arm position in rotations
+        int getArmPosition(); // returns the position of the arm in roations
     private:
-        char _leftSpeed; // in RPM
-        char _rightSpeed; // in RPM
-        char _armPosition; // in rotations
+        int _leftSpeed; // in RPM
+        int _rightSpeed; // in RPM
+        int _armPosition; // in rotations
+        bool _leftPositive;
+        bool _rightPositive;
         float _preciseArmPosition; 
 
 };

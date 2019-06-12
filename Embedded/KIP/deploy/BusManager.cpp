@@ -37,19 +37,30 @@ void BusManager::teleopHandler(char c) {
 
 void BusManager::feedData(char c) {
     if (c == (char) SYNC_BYTE) {
-        _busState = NEXT_MOTOR_0;
+        _busState = NEXT_DIR_0;
         std::cout << "got sync byte" << std::endl;
         return;
     }
     switch (_busState) {
+        case NEXT_DIR_0:
+            _robotState.setLeftDriveDirection((int)c);
+            // std::cout << "ldir: " << (int) c << std::endl;
+            _busState = NEXT_MOTOR_0;
+        break;
         case NEXT_MOTOR_0:
-            // std::cout << "setting left to: " << (int) c << std::endl; 
-            _robotState.setLeftDriveSpeed(c);
+            // std::cout << "setting left to: " << ((int) c) << " adjusted: " << ((int)c) - 127<< std::endl; 
+
+            _robotState.setLeftDriveSpeed( ((int)c) );
+            _busState = NEXT_DIR_1;
+        break;
+        case NEXT_DIR_1:
+            _robotState.setRightDriveDirection((int)c);
+            // std::cout << "rdir: " << (int) c << std::endl;
             _busState = NEXT_MOTOR_1;
         break;
         case NEXT_MOTOR_1:
             // std::cout << "setting right to: " << (int) c << std::endl;
-            _robotState.setRightDriveSpeed(c);
+            _robotState.setRightDriveSpeed( ((int)c) );
             _busState = NEXT_MOTOR_2;
         break;
         case NEXT_MOTOR_2:
@@ -65,7 +76,7 @@ void BusManager::feedData(char c) {
     }
 }
 float speedConverter(int speed) {
-    return float(speed) * (200.f/127.f);
+    return float(speed);
 }
 
 void BusManager::update(unsigned long dt) {
@@ -79,8 +90,10 @@ void BusManager::update(unsigned long dt) {
     } else {
         _dev.motor1.enable();
     }
-    _dev.motor0.setSpeed( speedConverter((int)_robotState.getLeftDriveSpeed()) );
-    _dev.motor1.setSpeed( speedConverter((int)_robotState.getRightDriveSpeed()) );
+    // std::cout << "left: " << (float)_robotState.getLeftDriveSpeed() << std::endl;
+    // std::cout << "right: " << (float)_robotState.getRightDriveSpeed() << std::endl;
+    _dev.motor0.setSpeed( (float)_robotState.getLeftDriveSpeed() );
+    _dev.motor1.setSpeed( (float)_robotState.getRightDriveSpeed() );
     _dev.motor2.setPosition( _robotState.getPreciseArmPosition() );
 
     _dev.motor0.update(dt);
