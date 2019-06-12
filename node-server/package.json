@@ -1,0 +1,11 @@
+{
+  "name": "kip-node-server",
+  "version": "0.0.0",
+  "description": "a node server that's based on socketio for the kip server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "GowanR",
+  "license": "ISC"
+}
