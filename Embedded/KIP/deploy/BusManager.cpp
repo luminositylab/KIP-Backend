@@ -1,6 +1,6 @@
 #include "BusManager.h"
 #define SYNC_BYTE 255
-
+#define TOP_SPEED 50
 BusManager::BusManager() {
     // Motor definitions
 
@@ -17,7 +17,7 @@ BusManager::BusManager() {
 
 
     _dev.motor2.setPositionMode();
-    _dev.motor2.setSpeed(200);
+    _dev.motor2.setSpeed(100);
     _dev.motor2.enable();
 
 
@@ -90,10 +90,16 @@ void BusManager::update(unsigned long dt) {
     } else {
         _dev.motor1.enable();
     }
+
+    if(_dev.motor2.getPosition() < 0.1) {
+        _dev.motor2.enableSleep();
+    } else {
+        _dev.motor2.disableSleep();
+    }
     // std::cout << "left: " << (float)_robotState.getLeftDriveSpeed() << std::endl;
     // std::cout << "right: " << (float)_robotState.getRightDriveSpeed() << std::endl;
-    _dev.motor0.setSpeed( (float)_robotState.getLeftDriveSpeed() );
-    _dev.motor1.setSpeed( (float)_robotState.getRightDriveSpeed() );
+    _dev.motor0.setSpeed( (((float)_robotState.getLeftDriveSpeed()/100.f) * TOP_SPEED) );
+    _dev.motor1.setSpeed( ((float)_robotState.getRightDriveSpeed()/100.f) * TOP_SPEED );
     _dev.motor2.setPosition( _robotState.getPreciseArmPosition() );
 
     _dev.motor0.update(dt);
