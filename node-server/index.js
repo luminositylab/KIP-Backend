@@ -45,26 +45,38 @@ function direction(n) {
 function send_packet(left_speed, right_speed, arm_pos) {
 	i2c1.writeByteSync(ADDR, 255, direction(left_speed));
 	i2c1.writeByteSync(ADDR, Math.abs(left_speed), direction(right_speed));
-	i2c1.writeByteSync(ADDR, Math.abs(right_speed), arm_pos);
+	i2c1.writeByteSync(ADDR, Math.abs(right_speed), Math.abs(arm_pos));
 }
 
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
 });
 
+var lm = 0;
+var rm = 0;
+var arm = 0;
 io.on('connection', function(socket){
   socket.on("message", function(data) {
 	  parsed_data = JSON.parse(data);
 	  var motors = joystickToDiff(parsed_data.x, parsed_data.y, -1.0, 1.0, -127.0, 127.0);
 	  //console.log('left: ' + motors[0]);
 	  //console.log('right:' + motors[1]);
-	  var lm = parseInt((motors[0]) * 100);
-	  var rm = parseInt((motors[1]) * 100);
+	  lm = parseInt((motors[0]) * 100);
+	  rm = parseInt((motors[1]) * 100);
+	  arm = parseInt(parsed_data.arm * 100);
 	  console.log('left: ' + lm);
 	  console.log('right: ' + rm);
-	  send_packet(lm, rm, 0);
+	  console.log('arm: ' + arm);
+	  send_packet(lm, rm, arm);
 	  //console.log("x: " + parsed_data.x);
 	  //console.log("y: " + parsed_data.y);
+  });
+  socket.on("arm", function(data){
+  	var _data = JSON.parse(data);
+	arm = parseInt(_data.arm * 100);
+	console.log("arm " + arm);	
+	send_packet(lm, rm, arm);
+
   });
   console.log('a user connected');
 });
