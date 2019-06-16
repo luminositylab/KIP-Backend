@@ -45,10 +45,15 @@ function direction(n) {
  } 
 }
 function send_packet(left_speed, right_speed, arm_pos, gripper) {
-	i2c1.writeByteSync(ADDR, 255, direction(left_speed));// Math.abs(left_speed), direction(right_speed), Math.abs(right_speed), Math.abs(arm_pos), Math.abs(gripper));
-	i2c1.writeByteSync(ADDR, Math.abs(left_speed), direction(right_speed));
-	i2c1.writeByteSync(ADDR, Math.abs(right_speed), Math.abs(arm_pos));
-	i2c1.writeByteSync(ADDR, Math.abs(gripper), 0);
+	try {
+		console.log(255 + "|" + direction(left_speed) + "|" + Math.abs(left_speed) + "|" + direction(right_speed) + "|" + Math.abs(right_speed) + "|" + Math.abs(arm_pos) + "|" + Math.abs(gripper) + "|" + 0);
+		i2c1.writeByteSync(ADDR, 255, direction(left_speed));// Math.abs(left_speed), direction(right_speed), Math.abs(right_speed), Math.abs(arm_pos), Math.abs(gripper));
+		i2c1.writeByteSync(ADDR, Math.abs(left_speed), direction(right_speed));
+		i2c1.writeByteSync(ADDR, Math.abs(right_speed), Math.abs(arm_pos));
+		i2c1.writeByteSync(ADDR, Math.abs(gripper), 0);
+	} catch (e) {
+		console.log('ERROR AND CRASH' + e);
+	}
 }
 
 app.get('/', function(req, res){
