@@ -7,7 +7,9 @@ RobotState::RobotState() {
     _rightPositive = true;
     _leftPositive = true;
 }
-
+void RobotState::begin() {
+    _mainServo.attach(2);
+}
 void RobotState::setLeftDriveSpeed(int speed) {
     _leftSpeed = speed;
 }
@@ -50,4 +52,16 @@ void RobotState::setLeftDriveDirection(int dir) {
 }
 void RobotState::setRightDriveDirection(int dir){
     _rightPositive = dir > 0;
+}
+
+void RobotState::setServo(int pos) {
+    if(pos == _servoPos) {
+        return;
+    }
+    _servoPos = pos;
+    _mainServo.write(_servoPos);
+}
+
+int RobotState::getServo(){
+   return _servoPos; 
 }

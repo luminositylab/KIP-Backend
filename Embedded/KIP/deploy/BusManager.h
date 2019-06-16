@@ -6,6 +6,7 @@
 #include <DevBoardLayout.h>
 #include "ParseOption.h"
 #include "RobotState.h"
+
 #ifndef __BUSMANAGER_H_
 #define __BUSMANAGER_H_
 
@@ -27,6 +28,7 @@ enum BusState {
   NEXT_MOTOR_1,
   NEXT_DIR_2,
   NEXT_MOTOR_2,
+  NEXT_SERVO,
   IDLE
 };
 class BusManager {

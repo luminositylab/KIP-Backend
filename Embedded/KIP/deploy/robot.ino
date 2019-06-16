@@ -10,12 +10,14 @@
 unsigned long lastTime;
 unsigned long dt;
 
-BusManager _busManager = BusManager();
-ParseOption _parser = ParseOption();
+BusManager _busManager = BusManager(); 
+// ParseOption _parser;
 void setup() {
-  // Serial.begin(250000);
-  Wire.setClock(9e9);
-  // std::cout << "[BOOTED]" << std::endl;
+  _busManager._robotState.begin();
+  // _parser = ParseOption();
+  Serial.begin(250000);
+  Wire.setClock(400000);
+  std::cout << "[BOOTED]" << std::endl;
   // _parser.runUnitTests();
     Wire.begin(0x8);
     Wire.onReceive(receiveEvent);
@@ -36,8 +38,10 @@ void receiveEvent(int howMany) {
   int i = 0;
   while (Wire.available()) { // loop through all but the last
     char c = Wire.read(); // receive byte as a character
-    // std::cout << c << " " << i++ << std::endl;
+    std::cout << (int)c  << std::endl;
+
     _busManager.feedData(c);
+    // std::cout << "[yee]" << std::endl;
 
   }
 }

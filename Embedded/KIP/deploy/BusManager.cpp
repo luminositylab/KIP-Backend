@@ -1,4 +1,5 @@
 #include "BusManager.h"
+
 #define SYNC_BYTE 255
 #define TOP_SPEED 50
 BusManager::BusManager() {
@@ -36,7 +37,7 @@ void BusManager::teleopHandler(char c) {
 }
 
 void BusManager::feedData(char c) {
-    if (c == (char) SYNC_BYTE) {
+    if (c == (char)SYNC_BYTE) {
         _busState = NEXT_DIR_0;
         std::cout << "got sync byte" << std::endl;
         return;
@@ -65,11 +66,18 @@ void BusManager::feedData(char c) {
         break;
         case NEXT_MOTOR_2:
             // std::cout << "setting arm to: " << (int) c << std::endl;
-            float pos = (float)c / 100.f;
-            _robotState.setPreciseArmPosition(pos);
+            _robotState.setServo((int) c);
+            _robotState.setPreciseArmPosition((float)c / 100.f);
+            _busState = NEXT_SERVO;
+            // std::cout << "set arm" << std::endl;
+        break;
+        case NEXT_SERVO:
+            // std::cout << "servo: " << c << std::endl;
+            _robotState.setServo((int) c);
             _busState = IDLE;
         break;
         case IDLE:
+            // std::cout << "IDLE" << std::endl;
         break;
         default:
         break;
@@ -101,8 +109,10 @@ void BusManager::update(unsigned long dt) {
     _dev.motor0.setSpeed( (((float)_robotState.getLeftDriveSpeed()/100.f) * TOP_SPEED) );
     _dev.motor1.setSpeed( ((float)_robotState.getRightDriveSpeed()/100.f) * TOP_SPEED );
     _dev.motor2.setPosition( _robotState.getPreciseArmPosition() );
-
+    
     _dev.motor0.update(dt);
     _dev.motor1.update(dt);
     _dev.motor2.update(dt);
+    
+
 }
