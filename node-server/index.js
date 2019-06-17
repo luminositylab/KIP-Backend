@@ -1,10 +1,12 @@
+console.log("oof");
 const i2c = require('i2c-bus');
 const ADDR = 0x08;
 var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 const i2c1 = i2c.openSync(1);
-
+//var fs = require('fs')
+//const wstream = fs.createWriteStream('./myfifo')
 
 function joystickToDiff(x, y, minJoystick, maxJoystick, minSpeed, maxSpeed) {
 	if (x == 0 && y == 0) {
@@ -42,35 +44,68 @@ function direction(n) {
  	return 0;
  } 
 }
-function send_packet(left_speed, right_speed, arm_pos) {
-	i2c1.writeByteSync(ADDR, 255, direction(left_speed));
-	i2c1.writeByteSync(ADDR, Math.abs(left_speed), direction(right_speed));
-	i2c1.writeByteSync(ADDR, Math.abs(right_speed), arm_pos);
+function send_packet(left_speed, right_speed, arm_pos, gripper) {
+	try {
+		console.log(255 + "|" + direction(left_speed) + "|" + Math.abs(left_speed) + "|" + direction(right_speed) + "|" + Math.abs(right_speed) + "|" + Math.abs(arm_pos) + "|" + Math.abs(gripper) + "|" + 0);
+		i2c1.writeByteSync(ADDR, 255, direction(left_speed));// Math.abs(left_speed), direction(right_speed), Math.abs(right_speed), Math.abs(arm_pos), Math.abs(gripper));
+		i2c1.writeByteSync(ADDR, Math.abs(left_speed), direction(right_speed));
+		i2c1.writeByteSync(ADDR, Math.abs(right_speed), Math.abs(arm_pos));
+		i2c1.writeByteSync(ADDR, Math.abs(gripper), 0);
+	} catch (e) {
+		console.log('ERROR AND CRASH' + e);
+	}
 }
 
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
 });
 
+var lm = 0;
+var rm = 0;
+var arm = 0;
+var gripper = 0;
 io.on('connection', function(socket){
   socket.on("message", function(data) {
 	  parsed_data = JSON.parse(data);
 	  var motors = joystickToDiff(parsed_data.x, parsed_data.y, -1.0, 1.0, -127.0, 127.0);
 	  //console.log('left: ' + motors[0]);
 	  //console.log('right:' + motors[1]);
-	  var lm = parseInt((motors[0]) * 100);
-	  var rm = parseInt((motors[1]) * 100);
-	  console.log('left: ' + lm);
-	  console.log('right: ' + rm);
-	  send_packet(lm, rm, 0);
+	  lm = parseInt((motors[0]) * 100);
+	  rm = parseInt((motors[1]) * 100);
+	  arm = parseInt(parsed_data.arm * 100);
+	  //console.log('left: ' + lm);
+	  //console.log('right: ' + rm);
+	  //console.log('arm: ' + arm);
+	  send_packet(lm, rm, arm, gripper);
+	  
+	  if(Math.abs(parsed_data.x) > 0.16 || Math.abs(parsed_data.y) > 0.16) {
+	  	console.log("fast");
+		  //wstream.write("fast");
+	  } else {
+		console.log("stop");
+	  	//wstream.write("stop");
+	  }
 	  //console.log("x: " + parsed_data.x);
 	  //console.log("y: " + parsed_data.y);
+  });
+  socket.on("arm", function(data){
+  	var _data = JSON.parse(data);
+	arm = parseInt(_data.arm * 100);
+	console.log("arm " + arm);	
+	send_packet(lm, rm, arm, gripper);
+
+  });
+  socket.on("gripper", function(data){
+  	var _data = JSON.parse(data);
+	gripper = parseInt(_data.gripper * 100);
+	//console.log("gripper: " + gripper);
+	send_packet(lm, rm, arm, gripper);
   });
   console.log('a user connected');
 });
 
 http.listen(3000, function(){
-  console.log('listening on *:3000');
+  //console.log('listening on *:3000');
 });
 i2c1.closeSync();
 
