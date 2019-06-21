@@ -14,43 +14,38 @@ leftEye = Adafruit_SSD1306.SSD1306_128_32(rst=RST, i2c_address=0x3d)
 focused_right = Image.open('./i2c-eyes/focus-eyes2.png').convert('1')
 focused_left = Image.open('./i2c-eyes/focus-eyes.png').convert('1')
 cute_eye = Image.open('./i2c-eyes/eyes-block.png').convert('1')
+discon_eye = Image.open('./i2c-eyes/discon.png').convert('1')
 rightEye.begin()
 leftEye.begin()
 
-def fastEyes():
+def setEyes(left, right):
     global rightEye
     global leftEye
-    global focused_right
-    global focused_left
     leftEye.clear()
     rightEye.clear()
-    leftEye.image(focused_left)
-    rightEye.image(focused_right)
+    leftEye.image(left)
+    rightEye.image(right)
     leftEye.display()
     rightEye.display()
 
 def slowEyes():
-    global rightEye
-    global leftEye
-    global cute_eye
-    leftEye.clear()
-    rightEye.clear()
-    leftEye.image(cute_eye)
-    rightEye.image(cute_eye)
-    leftEye.display()
-    rightEye.display()
+    setEyes(cute_eye, cute_eye)
+def fastEyes():
+    setEyes(focused_left, focused_right)
+def disconEyes():
+    setEyes(discon_eye, discon_eye)
 
 print("Starting eyes")
 while(True):
-    time.sleep(0.2)
+    time.sleep(0.1)
     eyes = r.get("eyes")
-    print("eyes: ", eyes.decode())
+    con = r.get("user")
+    if con.decode() == "disconnected" or not con:
+        disconEyes()
+        continue
     if not eyes:
-        print("no eyes");
         continue
     if eyes.decode() == 'fast':
-        print("fast")
         fastEyes()
     if eyes.decode()== 'slow':
-        print("slow")
         slowEyes()

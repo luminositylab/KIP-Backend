@@ -45,8 +45,8 @@ disp.display()
 disp2.clear()
 disp2.display()
 
-eyes = Image.open('eyes.png').convert('1')
-eyes2 = Image.open('eyes2.png').convert('1')
+eyes = Image.open('discon.png').convert('1')
+eyes2 = Image.open('discon.png').convert('1')
 
 disp2.image(eyes)
 disp2.display()

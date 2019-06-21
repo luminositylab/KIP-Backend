@@ -1,2 +1,2 @@
-nodejs index.js > myfifo &
-python3 fifo-eyes.py
+nodejs index.js &
+python3 redis-eyes.py &
