@@ -1,10 +1,17 @@
 console.log("oof");
 const i2c = require('i2c-bus');
+var redis = require('redis'),
+    client = redis.createClient();
 const ADDR = 0x08;
 var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 const i2c1 = i2c.openSync(1);
+
+client.on('error', function(err) {
+	console.log("ERROR: " + err);
+});
+client.set("user", "disconnected");
 //var fs = require('fs')
 //const wstream = fs.createWriteStream('./myfifo')
 
@@ -65,9 +72,11 @@ var rm = 0;
 var arm = 0;
 var gripper = 0;
 io.on('connection', function(socket){
+	client.set("user", "connected")
   socket.on("message", function(data) {
+	  console.log("redis: " + client.get("foo"));
 	  parsed_data = JSON.parse(data);
-	  var motors = joystickToDiff(parsed_data.x, parsed_data.y, -1.0, 1.0, -127.0, 127.0);
+	  var motors = joystickToDiff(parsed_data.x*0.1, parsed_data.y*0.3, -1.0, 1.0, -127.0, 127.0);
 	  //console.log('left: ' + motors[0]);
 	  //console.log('right:' + motors[1]);
 	  lm = parseInt((motors[0]) * 100);
@@ -79,11 +88,9 @@ io.on('connection', function(socket){
 	  send_packet(lm, rm, arm, gripper);
 	  
 	  if(Math.abs(parsed_data.x) > 0.16 || Math.abs(parsed_data.y) > 0.16) {
-	  	console.log("fast");
-		  //wstream.write("fast");
+		  client.set("eyes", "fast");
 	  } else {
-		console.log("stop");
-	  	//wstream.write("stop");
+		  client.set("eyes", "slow");
 	  }
 	  //console.log("x: " + parsed_data.x);
 	  //console.log("y: " + parsed_data.y);
@@ -101,7 +108,10 @@ io.on('connection', function(socket){
 	//console.log("gripper: " + gripper);
 	send_packet(lm, rm, arm, gripper);
   });
-  console.log('a user connected');
+  socket.on("disconnect", function() {
+  	client.set("user", "disconnected");
+  });
+  console.log("a user connected");
 });
 
 http.listen(3000, function(){
