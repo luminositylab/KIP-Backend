@@ -7,10 +7,10 @@ from PIL import Image
 import redis
 
 r = redis.Redis(host='localhost', port=6379, db=0)
+r.set("user", "disconnected")
 RST = 24
 rightEye = Adafruit_SSD1306.SSD1306_128_32(rst=RST, i2c_address=0x3c)
 leftEye = Adafruit_SSD1306.SSD1306_128_32(rst=RST, i2c_address=0x3d)
-
 focused_right = Image.open('./i2c-eyes/focus-eyes2.png').convert('1')
 focused_left = Image.open('./i2c-eyes/focus-eyes.png').convert('1')
 cute_eye = Image.open('./i2c-eyes/eyes-block.png').convert('1')
